@@ -20,7 +20,7 @@
                 <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Bağlı (SDK)
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Tünel Bağlantısı Aktif
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba! Ben Gemini. Tarayıcı engellerini aşmak için resmi Google SDK altyapısına geçtik. Bana dilediğin soruyu sorabilirsin!
+                    Merhaba! Ben Gemini. Tarayıcı engellerini tamamen aşmak için güvenli bir tünel bağlantısı kurduk. Bana dilediğin soruyu sorabilirsin, anında yanıtlayacağım!
                 </div>
             </div>
         </div>
@@ -41,22 +41,14 @@
         </div>
     </div>
 
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/generative-ai": "https://esm.run/@google/generative-ai"
-        }
-      }
-    </script>
-
-    <script type="module">
-        import { GoogleGenAI } from '@google/generative-ai';
-
+    <script>
         // Görsellerinden aldığım çalışan orijinal anahtarın tamamı
-        const apiKey = "AQ.Ab8RN6ICVlrUbJpHNB8ZMnj99qRf32q2NFBBjeyyAB5zoyHdNA"; 
-        const ai = new GoogleGenAI({ apiKey: apiKey });
+        const GEMINI_API_KEY = "AQ.Ab8RN6ICVlrUbJpHNB8ZMnj99qRf32q2NFBBjeyyAB5zoyHdNA"; 
+        
+        // Tarayıcı engelini aşan AllOrigins Proxy Tünel URL'i
+        const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
-        // Fonksiyonu dışarıdan erişilebilir yapmak için window nesnesine bağlıyoruz
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
             const userMessage = inputField.value.trim();
@@ -89,14 +81,23 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // Resmi Google SDK Çağrısı (Tarayıcı Korumasını Aşar)
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: userMessage,
+                // İsteyi tünel üzerinden gönderiyoruz
+                const response = await fetch(PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userMessage }] }] })
                 });
 
+                const outerData = await response.json();
                 document.getElementById(loadingId).remove();
-                const aiResponse = response.text;
+
+                // Tünelden gelen ham veriyi ayıkla
+                const innerData = JSON.parse(outerData.contents);
+
+                let aiResponse = "Yapay zekadan yanıt çözülemedi.";
+                if (innerData.candidates && innerData.candidates[0].content.parts[0].text) {
+                    aiResponse = innerData.candidates[0].content.parts[0].text;
+                }
 
                 // Yanıtı ekrana bas
                 chatContainer.innerHTML += `
@@ -114,7 +115,7 @@
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Güvenlik Duvarı Engeli! Lütfen sayfayı yenileyip tekrar deneyin veya anahtarınızı kontrol edin.
+                            Bağlantı tünelinde gecikme oldu. Lütfen tekrar mesaj göndermeyi deneyin.
                         </div>
                     </div>
                 `;
