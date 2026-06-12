@@ -1,189 +1,219 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Iman Power AI</title>
-
-<style>
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-}
-
-#auth,#chat{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-
-input{
-width:100%;
-padding:12px;
-margin:5px 0;
-border:none;
-border-radius:8px;
-}
-
-button{
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-margin-top:5px;
-}
-
-.logo{
-width:150px;
-display:block;
-margin:auto;
-}
-
-#messages{
-height:500px;
-overflow-y:auto;
-background:#111827;
-padding:10px;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-.msg{
-padding:10px;
-margin:5px 0;
-border-radius:10px;
-}
-
-.user{
-background:#2563eb;
-}
-
-.ai{
-background:#374151;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KartalHaber AI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 3px; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
 
-<div id="auth">
-<img src="logo.png" class="logo">
+    <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center px-4">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-700 text-center">
+            <img src="logo.png" alt="Logo" class="mx-auto h-20 mb-6 object-contain onerror="this.src='https://placehold.co/150x150?text=AI+Logo'">
+            
+            <h2 id="auth-title" class="text-2xl font-bold mb-6 text-white">Yapay Zeka'ya Giriş Yap</h2>
 
-<h2>Kayıt / Giriş</h2>
+            <div class="space-y-4">
+                <input type="email" id="auth-email" placeholder="E-posta Adresiniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                <input type="password" id="auth-password" placeholder="Şifreniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
+                
+                <button id="btn-primary" onclick="handleAuth()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition duration-200">Giriş Yap</button>
+            </div>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Şifre">
+            <p class="mt-6 text-sm text-gray-400">
+                <span id="auth-toggle-text">Hesabınız yok mu?</span> 
+                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-blue-400 hover:underline font-medium ml-1">Kayıt Olun</button>
+            </p>
+        </div>
+    </div>
 
-<button onclick="register()">Kayıt Ol</button>
-<button onclick="login()">Giriş Yap</button>
-</div>
+    <div id="chat-screen" class="hidden flex-1 flex flex-col max-w-5xl w-full mx-auto p-4 h-[100vh]">
+        <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain">
+                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="user-display" class="text-sm text-gray-400 hidden sm:inline"></span>
+                <button onclick="logout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-sm font-medium rounded-lg transition duration-150 flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
+                </button>
+            </div>
+        </header>
 
-<div id="chat" style="display:none;">
-<img src="logo.png" class="logo">
+        <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+            <div class="flex items-start gap-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
+                <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
+                    Merhaba! Ben Gemini. Bugün sana nasıl yardımcı olabilirim?
+                </div>
+            </div>
+        </div>
 
-<h2>Iman Power AI</h2>
+        <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700 shadow-lg">
+            <input type="text" id="user-input" onkeypress="if(event.key === 'Enter') sendMessage()" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
+            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
 
-<div id="messages"></div>
+    <script type="module">
+        // Firebase Modüllerini Dahil Ediyoruz
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-<input id="prompt" placeholder="Mesaj yaz...">
+        // Senin Ekran Görüntündeki Birebir Firebase Yapılandırman
+        const firebaseConfig = {
+            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTL2oEuGFVGKs",
+            authDomain: "kartalhaber-49ae6.firebaseapp.com",
+            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
+            projectId: "kartalhaber-49ae6",
+            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
+            messagingSenderId: "804745909398",
+            appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
+            measurementId: "G-TV8NLXQTNP"
+        };
 
-<button onclick="sendMessage()">Gönder</button>
-<button onclick="logout()">Çıkış Yap</button>
-</div>
+        // Firebase Başlatma
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-<script type="module">
+        // Gemini 2.5 Flash API Tanımlaması
+        const GEMINI_API_KEY = "AQ.Ab8RN6IR-wb0IkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw"; 
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        // Değişkenler
+        let isLoginMode = true;
 
-import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-signOut,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+        // Ekranları Kontrol Etme Fonksiyonları
+        window.toggleAuthMode = function() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Yapay Zeka'ya Giriş Yap" : "Yeni Hesap Oluştur";
+            document.getElementById('btn-primary').innerText = isLoginMode ? "Giriş Yap" : "Kayıt Ol";
+            document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Hesabınız yok mu?" : "Zaten üye misiniz?";
+            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Kayıt Olun" : "Giriş Yapın";
+        }
 
-const firebaseConfig = {
-apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
-authDomain: "kartalhaber-49ae6.firebaseapp.com",
-projectId: "kartalhaber-49ae6",
-storageBucket: "kartalhaber-49ae6.firebasestorage.app",
-messagingSenderId: "804745909398",
-appId: "1:804745909398:web:d4ecaf7174886bbe835eb7"
-};
+        // Giriş ve Kayıt Yönetimi
+        window.handleAuth = async function() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
 
-  const GEMINI_API_KEY = "AQ.Ab8RN6IR-wb0IkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw";
+            if(!email || !password) return alert("Lütfen tüm alanları doldurun.");
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Hesabınız başarıyla oluşturuldu! Giriş yapılıyor...");
+                }
+            } catch (error) {
+                alert("Hata: " + error.message);
+            }
+        }
 
-window.register = async () => {
+        // Çıkış Yapma
+        window.logout = function() {
+            signOut(auth);
+        }
 
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+        // Kullanıcı Durum Takibi (Giriş yaptı mı, yapmadı mı?)
+        onAuthStateChanged(auth, (user) => {
+            const authScreen = document.getElementById('auth-screen');
+            const chatScreen = document.getElementById('chat-screen');
+            
+            if (user) {
+                authScreen.classList.add('hidden');
+                chatScreen.classList.remove('hidden');
+                document.getElementById('user-display').innerText = user.email;
+            } else {
+                authScreen.classList.remove('hidden');
+                chatScreen.classList.add('hidden');
+                document.getElementById('auth-email').value = "";
+                document.getElementById('auth-password').value = "";
+            }
+        });
 
-try{
-await createUserWithEmailAndPassword(auth,email,password);
-alert("Kayıt başarılı");
-}catch(e){
-alert(e.message);
-}
+        // Sohbet ve Gemini Entegrasyonu
+        window.sendMessage = async function() {
+            const inputField = document.getElementById('user-input');
+            const userMessage = inputField.value.trim();
+            if (!userMessage) return;
 
-};
+            inputField.value = ""; // Kutuyu temizle
+            const chatContainer = document.getElementById('chat-container');
 
-window.login = async () => {
+            // 1. Kullanıcı mesajını ekrana bas
+            chatContainer.innerHTML += `
+                <div class="flex items-start gap-3 justify-end">
+                    <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
+                        ${userMessage}
+                    </div>
+                    <div class="bg-gray-700 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-user text-white"></i></div>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
+            // 2. Yapay Zeka "Yazıyor..." animasyonu ekle
+            const loadingId = "load-" + Date.now();
+            chatContainer.innerHTML += `
+                <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
+                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
+                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
+                        Düşünüyor...
+                    </div>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-try{
-await signInWithEmailAndPassword(auth,email,password);
-}catch(e){
-alert(e.message);
-}
+            // 3. Gemini API'sine İstek Gönder
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userMessage }] }]
+                    })
+                });
 
-};
+                const data = await response.json();
+                document.getElementById(loadingId).remove(); // Yükleniyor yazısını kaldır
 
-window.logout = async () => {
-await signOut(auth);
-};
+                let aiResponse = "Bir hata oluştu veya yanıt alınamadı.";
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    aiResponse = data.candidates[0].content.parts[0].text;
+                }
 
-onAuthStateChanged(auth,(user)=>{
-
-if(user){
-document.getElementById("auth").style.display="none";
-document.getElementById("chat").style.display="block";
-}else{
-document.getElementById("auth").style.display="block";
-document.getElementById("chat").style.display="none";
-}
-
-});
-
-window.sendMessage = async ()=>{
-
-const prompt=document.getElementById("prompt").value;
-
-if(!prompt) return;
-
-const messages=document.getElementById("messages");
-
-messages.innerHTML+=`
-<div class="msg user">${prompt}</div>
-`;
-
-document.getElementById("prompt").value="";
-
-messages.innerHTML+=`
-<div class="msg ai">Gemini API henüz bağlanmadı.</div>
-`;
-
-messages.scrollTop=messages.scrollHeight;
-
-};
-
-</script>
-
+                // 4. Yapay zekanın cevabını ekrana bas
+                chatContainer.innerHTML += `
+                    <div class="flex items-start gap-3">
+                        <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">
+                            ${aiResponse}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                chatContainer.innerHTML += `
+                    <div class="flex items-start gap-3">
+                        <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
+                            API bağlantısı kurulamadı. Lütfen API anahtarınızı kontrol edin.
+                        </div>
+                    </div>
+                `;
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
 </body>
 </html>
