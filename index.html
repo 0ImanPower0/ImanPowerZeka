@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaberr AI Chat</title>
+    <title>KartalHaber AI Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,13 +17,11 @@
         <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-700 text-center">
             <img src="logo.png" alt="Logo" class="mx-auto h-20 mb-6 object-contain" onerror="this.src='https://placehold.co/150x150?text=AI+Logo'">
             <h2 id="auth-title" class="text-2xl font-bold mb-6 text-white">Yapay Zeka'ya Giriş Yap</h2>
-
             <div class="space-y-4">
                 <input type="email" id="auth-email" placeholder="E-posta Adresiniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
                 <input type="password" id="auth-password" placeholder="Şifreniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
                 <button id="btn-primary" onclick="handleAuth()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition duration-200">Giriş Yap</button>
             </div>
-
             <p class="mt-6 text-sm text-gray-400">
                 <span id="auth-toggle-text">Hesabınız yok mu?</span> 
                 <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-blue-400 hover:underline font-medium ml-1">Kayıt Olun</button>
@@ -62,18 +60,25 @@
         </div>
     </div>
 
-    <script>
-        // CRITICAL: Google AI Studio'dan "Copy Key" diyerek aldığın eksiksiz anahtarı buraya yapıştır!
-        const GEMINI_API_KEY = "AQ.Ab8RN6ICVlrUbJpHNB8ZMnj99qRf32q2NFBBjeyyAB5zoyHdNA"; 
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <script type="module">
+        import { GoogleGenAI } from '@google/generative-ai';
+
+        // Senin Google AI Studio'dan aldığın güncel anahtar
+        const apiKey = "AQAb8RN6ICVlrUbJpHNB8ZMnj99qRf32q2NFBBjeyyAB5zoyHdNA"; 
+        const ai = new GoogleGenAI({ apiKey: apiKey });
 
         let isLoginMode = true;
 
         window.onload = function() {
             const sessionUser = localStorage.getItem("loggedInUser");
-            if (sessionUser) {
-                showChatScreen(sessionUser);
-            }
+            if (sessionUser) showChatScreen(sessionUser);
         }
 
         window.toggleAuthMode = function() {
@@ -87,27 +92,20 @@
         window.handleAuth = function() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
-
-            if(!email || !password) return alert("Lütfen tüm alanları doldurun.");
-            if(password.length < 4) return alert("Şifre en az 4 karakter olmalıdır.");
-
+            if(!email || !password) return alert("Lütfen alanları doldurun.");
+            
             let users = JSON.parse(localStorage.getItem("chatUsers")) || {};
-
             if (isLoginMode) {
                 if (users[email] && users[email] === password) {
                     localStorage.setItem("loggedInUser", email);
                     showChatScreen(email);
-                } else {
-                    alert("Hata: E-posta veya şifre hatalı!");
-                }
+                } else { alert("E-posta veya şifre hatalı!"); }
             } else {
-                if (users[email]) {
-                    alert("Hata: Bu e-posta adresi zaten kayıtlı!");
-                } else {
+                if (users[email]) { alert("Bu e-posta zaten kayıtlı!"); } 
+                else {
                     users[email] = password;
                     localStorage.setItem("chatUsers", JSON.stringify(users));
                     localStorage.setItem("loggedInUser", email);
-                    alert("Hesabınız başarıyla oluşturuldu!");
                     showChatScreen(email);
                 }
             }
@@ -123,8 +121,6 @@
             localStorage.removeItem("loggedInUser");
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('chat-screen').classList.add('hidden');
-            document.getElementById('auth-email').value = "";
-            document.getElementById('auth-password').value = "";
         }
 
         window.sendMessage = async function() {
@@ -137,58 +133,41 @@
 
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
-                    <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
-                        ${userMessage}
-                    </div>
-                    <div class="bg-gray-700 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-user text-white"></i></div>
-                </div>
-            `;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
+                    <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">${userMessage}</div>
+                    <div class="bg-gray-700 p-2.5 rounded-xl"><i class="fa-solid fa-user text-white"></i></div>
+                </div>`;
+            
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
                     <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
-                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Düşünüyor...
-                    </div>
-                </div>
-            `;
+                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">Düşünüyor...</div>
+                </div>`;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                const response = await fetch(GEMINI_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: userMessage }] }] })
+                // Modeli resmi SDK yapısıyla çağırıyoruz
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: userMessage,
                 });
 
-                const data = await response.json();
                 document.getElementById(loadingId).remove();
-
-                let aiResponse = "Yapay zekadan yanıt alınamadı.";
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    aiResponse = data.candidates[0].content.parts[0].text;
-                }
+                const aiResponse = response.text;
 
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
-                        <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
-                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">
-                            ${aiResponse}
-                        </div>
-                    </div>
-                `;
+                        <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">${aiResponse}</div>
+                    </div>`;
             } catch (error) {
+                console.error(error);
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
-                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bağlantı hatası! Lütfen API anahtarınızın tam kopyalandığından emin olun.
-                        </div>
-                    </div>
-                `;
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">Tarayıcı güvenlik engeline takıldı. Lütfen 2. Yolu deneyin.</div>
+                    </div>`;
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
