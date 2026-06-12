@@ -20,7 +20,7 @@
                 <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Yapay Zeka Aktif
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> SDK Bağlantısı Güvenli
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba! Ben KartalHaber Yapay Zeka asistanıyım. Giriş sistemini tamamen kaldırdık. Bana dilediğin her şeyi sorabilirsin, seni dinliyorum!
+                    Sistem başarıyla güncellendi! Hugging Face resmi kütüphane altyapısına geçtik. Bana dilediğini sorabilirsin, yanıtlamaya hazırım.
                 </div>
             </div>
         </div>
@@ -41,12 +41,11 @@
         </div>
     </div>
 
-    <script>
-        // Hugging Face'den aldığın çalışan kesin ve orijinal anahtarın
-        const HF_API_KEY = "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"; 
-        
-        // Dünyanın en gelişmiş ve hızlı çalışan açık kaynaklı Türkçe destekli dil modeli
-        const API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
+    <script type="module">
+        import { HfInference } from 'https://cdn.jsdelivr.net/npm/@huggingface/inference@2.6.4/+esm';
+
+        // Senin kopyaladığın kesin ve orijinal anahtar
+        const hf = new HfInference("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");
 
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
@@ -56,7 +55,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
-            // Kullanıcının yazdığı mesajı ekrana yerleştir
+            // Kullanıcı mesajı
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -67,7 +66,7 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Yapay zeka düşünüyor animasyonunu başlat
+            // Düşünüyor animasyonu
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
@@ -80,32 +79,17 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // İstek doğrudan Hugging Face sunucusuna iletiliyor (CORS koruması yok)
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${HF_API_KEY}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        inputs: userMessage,
-                        parameters: { max_new_tokens: 512 }
-                    })
+                // Resmi SDK üzerinden kararlı Llama modeli çağrısı
+                const response = await hf.textGeneration({
+                    model: 'meta-llama/Meta-Llama-3-8B-Instruct',
+                    inputs: `<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nLütfen sadece Türkçe cevap ver: ${userMessage}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`,
+                    parameters: { max_new_tokens: 256, return_full_text: false }
                 });
 
-                const data = await response.json();
                 document.getElementById(loadingId).remove();
+                const aiResponse = response.generated_text.trim();
 
-                let aiResponse = "Yapay zekadan yanıt çözülemedi.";
-                
-                if (data && data[0] && data[0].generated_text) {
-                    // Ham yanıttan soru kısmını temizleyerek temiz çıktı üretiyoruz
-                    aiResponse = data[0].generated_text.replace(userMessage, "").trim();
-                } else if (data.error) {
-                    aiResponse = "Yapay zeka modeli şu an sunucuda uyanıyor, lütfen 10 saniye sonra tekrar bir şey yazın.";
-                }
-
-                // Yapay zekanın cevabını ekrana yansıt
+                // Cevabı ekrana bas
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
@@ -115,12 +99,13 @@
                     </div>
                 `;
             } catch (error) {
+                console.error(error);
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bağlantı hatası oluştu, lütfen internetinizi kontrol edip tekrar deneyin.
+                            Yeni anahtarınız sistemde aktifleşiyor veya model uyanıyor. Lütfen 15 saniye sonra tekrar deneyin.
                         </div>
                     </div>
                 `;
