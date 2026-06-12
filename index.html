@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaberr AI Chat</title>
+    <title>KartalHaber AI Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,12 +13,15 @@
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
 
+    <!-- 1. GİRİŞ & KAYIT EKRANI -->
     <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center px-4">
         <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-700 text-center">
+            <!-- Logo Alanı -->
             <img src="logo.png" alt="Logo" class="mx-auto h-20 mb-6 object-contain" onerror="this.src='https://placehold.co/150x150?text=AI+Logo'">
             
             <h2 id="auth-title" class="text-2xl font-bold mb-6 text-white">Yapay Zeka'ya Giriş Yap</h2>
 
+            <!-- Form Elemanları -->
             <div class="space-y-4">
                 <input type="email" id="auth-email" placeholder="E-posta Adresiniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
                 <input type="password" id="auth-password" placeholder="Şifreniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
@@ -26,6 +29,7 @@
                 <button id="btn-primary" onclick="handleAuth()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition duration-200">Giriş Yap</button>
             </div>
 
+            <!-- Giriş/Kayıt Değiştirme Linki -->
             <p class="mt-6 text-sm text-gray-400">
                 <span id="auth-toggle-text">Hesabınız yok mu?</span> 
                 <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-blue-400 hover:underline font-medium ml-1">Kayıt Olun</button>
@@ -33,7 +37,9 @@
         </div>
     </div>
 
+    <!-- 2. SOHBET (CHAT) EKRANI (BAŞLANGIÇTA GİZLİ) -->
     <div id="chat-screen" class="hidden flex-1 flex flex-col max-w-5xl w-full mx-auto p-4 h-[100vh]">
+        <!-- Üst Bar -->
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain">
@@ -47,7 +53,9 @@
             </div>
         </header>
 
+        <!-- Mesajlaşma Alanı -->
         <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
+            <!-- Yapay Zeka Karşılama Mesajı -->
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
@@ -56,6 +64,7 @@
             </div>
         </div>
 
+        <!-- Mesaj Giriş Barı -->
         <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700 shadow-lg">
             <input type="text" id="user-input" onkeypress="if(event.key === 'Enter') sendMessage()" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
             <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
@@ -64,13 +73,14 @@
         </div>
     </div>
 
+    <!-- FİREBASE SDK MODÜLLERİ VE MANTIKSAL KODLAR -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Firebase Yapılandırması (Hata almamak için Google AI Studio anahtarını buraya da bağlıyoruz)
+        // İlk ekran görüntündeki orijinal Firebase ayarların (Buna dokunma)
         const firebaseConfig = {
-            apiKey: "AQ.Ab8RN6IR-wb0IkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw", 
+            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTL2oEuGFVGKs", 
             authDomain: "kartalhaber-49ae6.firebaseapp.com",
             databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
             projectId: "kartalhaber-49ae6",
@@ -84,7 +94,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Gemini 2.5 Flash API Tanımlaması
+        // SADECE BURAYI DEĞİŞTİR: Google AI Studio sekmesinden aldığın Gemini keyini tırnak içine yapıştır
         const GEMINI_API_KEY = "AQ.Ab8RN6IR-wb0IkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw"; 
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
