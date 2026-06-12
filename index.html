@@ -78,7 +78,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // İlk ekran görüntündeki orijinal Firebase ayarların (Buna dokunma)
+        // Firebase Orijinal Yapılandırması (İlk ekran görüntündeki doğru ayarlara sabitlendi)
         const firebaseConfig = {
             apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTL2oEuGFVGKs", 
             authDomain: "kartalhaber-49ae6.firebaseapp.com",
@@ -94,8 +94,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // SADECE BURAYI DEĞİŞTİR: Google AI Studio sekmesinden aldığın Gemini keyini tırnak içine yapıştır
-        const GEMINI_API_KEY = "AQ.Ab8RN6IR-wb0IkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw"; 
+        // Ekran görüntüsünden aldığım senin Gemini 2.5 Flash API anahtarın buraya yerleştirildi
+        const GEMINI_API_KEY = "AQAb8RN6IR-wb0lkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw"; 
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         let isLoginMode = true;
@@ -206,7 +206,7 @@
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bağlantı kurulamadı. Lütfen API anahtarınızı doğru yazdığınızdan emin olun.
+                            Yapay zeka yanıt veremedi. Lütfen tekrar deneyin.
                         </div>
                     </div>
                 `;
