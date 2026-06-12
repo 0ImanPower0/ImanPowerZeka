@@ -20,7 +20,7 @@
                 <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Tünel Bağlantısı Aktif
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Aktif
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba! Ben Gemini. Tarayıcı engellerini tamamen aşmak için güvenli bir tünel bağlantısı kurduk. Bana dilediğin soruyu sorabilirsin, anında yanıtlayacağım!
+                    Merhaba! Ben yapay zeka asistanınız. Kayıt sistemi olmadan doğrudan bana sorularınızı sorabilirsiniz. Nasıl yardımcı olabilirim?
                 </div>
             </div>
         </div>
@@ -42,12 +42,11 @@
     </div>
 
     <script>
-        // Görsellerinden aldığım çalışan orijinal anahtarın tamamı
-        const GEMINI_API_KEY = "AQ.Ab8RN6ICVlrUbJpHNB8ZMnj99qRf32q2NFBBjeyyAB5zoyHdNA"; 
+        // BURAYA kopyaladığın hf_... ile başlayan tokenını yapıştır!
+        const HF_API_KEY = "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"; 
         
-        // Tarayıcı engelini aşan AllOrigins Proxy Tünel URL'i
-        const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-        const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+        // Hızlı ve kararlı çalışan açık kaynaklı dil modeli
+        const API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
 
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
@@ -57,7 +56,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
-            // Kullanıcı mesajını ekle
+            // Kullanıcı mesajı ekrana
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -68,7 +67,7 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Yükleniyor animasyonu ekle
+            // Yükleniyor durumu
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
@@ -81,22 +80,27 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // İsteyi tünel üzerinden gönderiyoruz
-                const response = await fetch(PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: userMessage }] }] })
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${HF_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        inputs: userMessage,
+                        parameters: { max_new_tokens: 512 }
+                    })
                 });
 
-                const outerData = await response.json();
+                const data = await response.json();
                 document.getElementById(loadingId).remove();
 
-                // Tünelden gelen ham veriyi ayıkla
-                const innerData = JSON.parse(outerData.contents);
-
-                let aiResponse = "Yapay zekadan yanıt çözülemedi.";
-                if (innerData.candidates && innerData.candidates[0].content.parts[0].text) {
-                    aiResponse = innerData.candidates[0].content.parts[0].text;
+                let aiResponse = "Yapay zekadan yanıt alınamadı.";
+                
+                if (data && data[0] && data[0].generated_text) {
+                    aiResponse = data[0].generated_text.replace(userMessage, "").trim();
+                } else if (data.error) {
+                    aiResponse = "Model şu an arka planda sunucuya yükleniyor, lütfen 10 saniye sonra tekrar mesaj atmayı deneyin.";
                 }
 
                 // Yanıtı ekrana bas
@@ -109,13 +113,12 @@
                     </div>
                 `;
             } catch (error) {
-                console.error(error);
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bağlantı tünelinde gecikme oldu. Lütfen tekrar mesaj göndermeyi deneyin.
+                            Bağlantı hatası oluştu!
                         </div>
                     </div>
                 `;
