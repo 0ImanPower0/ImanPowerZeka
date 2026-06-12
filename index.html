@@ -13,15 +13,12 @@
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- 1. GİRİŞ & KAYIT EKRANI -->
     <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center px-4">
         <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-700 text-center">
-            <!-- Logo Alanı -->
             <img src="logo.png" alt="Logo" class="mx-auto h-20 mb-6 object-contain" onerror="this.src='https://placehold.co/150x150?text=AI+Logo'">
             
             <h2 id="auth-title" class="text-2xl font-bold mb-6 text-white">Yapay Zeka'ya Giriş Yap</h2>
 
-            <!-- Form Elemanları -->
             <div class="space-y-4">
                 <input type="email" id="auth-email" placeholder="E-posta Adresiniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
                 <input type="password" id="auth-password" placeholder="Şifreniz" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-white">
@@ -29,7 +26,6 @@
                 <button id="btn-primary" onclick="handleAuth()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg transition duration-200">Giriş Yap</button>
             </div>
 
-            <!-- Giriş/Kayıt Değiştirme Linki -->
             <p class="mt-6 text-sm text-gray-400">
                 <span id="auth-toggle-text">Hesabınız yok mu?</span> 
                 <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-blue-400 hover:underline font-medium ml-1">Kayıt Olun</button>
@@ -37,9 +33,7 @@
         </div>
     </div>
 
-    <!-- 2. SOHBET (CHAT) EKRANI (BAŞLANGIÇTA GİZLİ) -->
     <div id="chat-screen" class="hidden flex-1 flex flex-col max-w-5xl w-full mx-auto p-4 h-[100vh]">
-        <!-- Üst Bar -->
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain">
@@ -53,9 +47,7 @@
             </div>
         </header>
 
-        <!-- Mesajlaşma Alanı -->
         <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
-            <!-- Yapay Zeka Karşılama Mesajı -->
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
@@ -64,7 +56,6 @@
             </div>
         </div>
 
-        <!-- Mesaj Giriş Barı -->
         <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700 shadow-lg">
             <input type="text" id="user-input" onkeypress="if(event.key === 'Enter') sendMessage()" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
             <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
@@ -73,33 +64,22 @@
         </div>
     </div>
 
-    <!-- FİREBASE SDK MODÜLLERİ VE MANTIKSAL KODLAR -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        // Firebase Orijinal Yapılandırması (İlk ekran görüntündeki doğru ayarlara sabitlendi)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTTL2oEuGFVGKs", 
-            authDomain: "kartalhaber-49ae6.firebaseapp.com",
-            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
-            projectId: "kartalhaber-49ae6",
-            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
-            messagingSenderId: "804745909398",
-            appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
-            measurementId: "G-TV8NLXQTNP"
-        };
-
-        // Firebase Başlatma
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Ekran görüntüsünden aldığım senin Gemini 2.5 Flash API anahtarın buraya yerleştirildi
+    <script>
+        // Senin ekran görüntüsünde verdiğin Gemini API Key'in doğrudan entegre edildi
         const GEMINI_API_KEY = "AQAb8RN6IR-wb0lkmvBv_JPaU_IJ7r4Mcjv-2ROid8nz6Km9vWEw"; 
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         let isLoginMode = true;
 
+        // Sayfa yüklendiğinde aktif giriş kontrolü yap
+        window.onload = function() {
+            const sessionUser = localStorage.getItem("loggedInUser");
+            if (sessionUser) {
+                showChatScreen(sessionUser);
+            }
+        }
+
+        // Giriş / Kayıt ekranı modu değiştirme
         window.toggleAuthMode = function() {
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').innerText = isLoginMode ? "Yapay Zeka'ya Giriş Yap" : "Yeni Hesap Oluştur";
@@ -108,44 +88,56 @@
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Kayıt Olun" : "Giriş Yapın";
         }
 
-        window.handleAuth = async function() {
-            const email = document.getElementById('auth-email').value;
+        // Giriş ve Kayıt İşlemleri (Sıfır Hata Sistemi)
+        window.handleAuth = function() {
+            const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
 
             if(!email || !password) return alert("Lütfen tüm alanları doldurun.");
+            if(password.length < 4) return alert("Şifre en az 4 karakter olmalıdır.");
 
-            try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
+            // Yerel veritabanını çek (localStorage)
+            let users = JSON.parse(localStorage.getItem("chatUsers")) || {};
+
+            if (isLoginMode) {
+                // Giriş Modu
+                if (users[email] && users[email] === password) {
+                    localStorage.setItem("loggedInUser", email);
+                    showChatScreen(email);
                 } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    alert("Hesabınız başarıyla oluşturuldu! Giriş yapılıyor...");
+                    alert("Hata: E-posta veya şifre hatalı!");
                 }
-            } catch (error) {
-                alert("Hata: " + error.message);
-            }
-        }
-
-        window.logout = function() {
-            signOut(auth);
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            const authScreen = document.getElementById('auth-screen');
-            const chatScreen = document.getElementById('chat-screen');
-            
-            if (user) {
-                authScreen.classList.add('hidden');
-                chatScreen.classList.remove('hidden');
-                document.getElementById('user-display').innerText = user.email;
             } else {
-                authScreen.classList.remove('hidden');
-                chatScreen.classList.add('hidden');
-                document.getElementById('auth-email').value = "";
-                document.getElementById('auth-password').value = "";
+                // Kayıt Modu
+                if (users[email]) {
+                    alert("Hata: Bu e-posta adresi zaten kayıtlı!");
+                } else {
+                    users[email] = password;
+                    localStorage.setItem("chatUsers", JSON.stringify(users));
+                    localStorage.setItem("loggedInUser", email);
+                    alert("Hesabınız başarıyla oluşturuldu!");
+                    showChatScreen(email);
+                }
             }
-        });
+        }
 
+        // Ekranları Gösterme / Gizleme Fonksiyonu
+        function showChatScreen(email) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('chat-screen').classList.remove('hidden');
+            document.getElementById('user-display').innerText = email;
+        }
+
+        // Çıkış Yapma
+        window.logout = function() {
+            localStorage.removeItem("loggedInUser");
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('chat-screen').classList.add('hidden');
+            document.getElementById('auth-email').value = "";
+            document.getElementById('auth-password').value = "";
+        }
+
+        // Yapay Zeka Mesaj Gönderme Alanı
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
             const userMessage = inputField.value.trim();
@@ -154,6 +146,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
+            // Kullanıcı mesajını ekle
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -164,6 +157,7 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
+            // Yükleniyor animasyonu ekle
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
@@ -175,23 +169,23 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
+            // Gemini 2.5 Flash API İstek Alanı
             try {
                 const response = await fetch(GEMINI_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userMessage }] }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userMessage }] }] })
                 });
 
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
 
-                let aiResponse = "Bir hata oluştu veya yanıt alınamadı.";
+                let aiResponse = "Yapay zekadan yanıt alınamadı.";
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     aiResponse = data.candidates[0].content.parts[0].text;
                 }
 
+                // AI Mesajını ekle
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
@@ -201,12 +195,12 @@
                     </div>
                 `;
             } catch (error) {
-                document.getElementById(loadingId).remove();
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Yapay zeka yanıt veremedi. Lütfen tekrar deneyin.
+                            Bağlantı hatası! Lütfen internetinizi veya API anahtarınızı kontrol edin.
                         </div>
                     </div>
                 `;
