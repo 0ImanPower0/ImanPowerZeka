@@ -20,7 +20,7 @@
                 <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Aktif
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Yapay Zeka Aktif
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba! Ben yapay zeka asistanınız. Kayıt sistemi olmadan doğrudan bana sorularınızı sorabilirsiniz. Nasıl yardımcı olabilirim?
+                    Merhaba! Ben KartalHaber Yapay Zeka asistanıyım. Giriş sistemini tamamen kaldırdık. Bana dilediğin her şeyi sorabilirsin, seni dinliyorum!
                 </div>
             </div>
         </div>
@@ -42,10 +42,10 @@
     </div>
 
     <script>
-        // BURAYA kopyaladığın hf_... ile başlayan tokenını yapıştır!
+        // Hugging Face'den aldığın çalışan kesin ve orijinal anahtarın
         const HF_API_KEY = "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"; 
         
-        // Hızlı ve kararlı çalışan açık kaynaklı dil modeli
+        // Dünyanın en gelişmiş ve hızlı çalışan açık kaynaklı Türkçe destekli dil modeli
         const API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
 
         window.sendMessage = async function() {
@@ -56,7 +56,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
-            // Kullanıcı mesajı ekrana
+            // Kullanıcının yazdığı mesajı ekrana yerleştir
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -67,7 +67,7 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Yükleniyor durumu
+            // Yapay zeka düşünüyor animasyonunu başlat
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
@@ -80,6 +80,7 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
+                // İstek doğrudan Hugging Face sunucusuna iletiliyor (CORS koruması yok)
                 const response = await fetch(API_URL, {
                     method: "POST",
                     headers: {
@@ -95,15 +96,16 @@
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
 
-                let aiResponse = "Yapay zekadan yanıt alınamadı.";
+                let aiResponse = "Yapay zekadan yanıt çözülemedi.";
                 
                 if (data && data[0] && data[0].generated_text) {
+                    // Ham yanıttan soru kısmını temizleyerek temiz çıktı üretiyoruz
                     aiResponse = data[0].generated_text.replace(userMessage, "").trim();
                 } else if (data.error) {
-                    aiResponse = "Model şu an arka planda sunucuya yükleniyor, lütfen 10 saniye sonra tekrar mesaj atmayı deneyin.";
+                    aiResponse = "Yapay zeka modeli şu an sunucuda uyanıyor, lütfen 10 saniye sonra tekrar bir şey yazın.";
                 }
 
-                // Yanıtı ekrana bas
+                // Yapay zekanın cevabını ekrana yansıt
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
@@ -118,7 +120,7 @@
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bağlantı hatası oluştu!
+                            Bağlantı hatası oluştu, lütfen internetinizi kontrol edip tekrar deneyin.
                         </div>
                     </div>
                 `;
