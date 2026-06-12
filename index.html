@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iman Power AI</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+#auth,#chat{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:5px 0;
+border:none;
+border-radius:8px;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin-top:5px;
+}
+
+.logo{
+width:150px;
+display:block;
+margin:auto;
+}
+
+#messages{
+height:500px;
+overflow-y:auto;
+background:#111827;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.msg{
+padding:10px;
+margin:5px 0;
+border-radius:10px;
+}
+
+.user{
+background:#2563eb;
+}
+
+.ai{
+background:#374151;
+}
+</style>
+</head>
+<body>
+
+<div id="auth">
+<img src="logo.png" class="logo">
+
+<h2>Kayıt / Giriş</h2>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Şifre">
+
+<button onclick="register()">Kayıt Ol</button>
+<button onclick="login()">Giriş Yap</button>
+</div>
+
+<div id="chat" style="display:none;">
+<img src="logo.png" class="logo">
+
+<h2>Iman Power AI</h2>
+
+<div id="messages"></div>
+
+<input id="prompt" placeholder="Mesaj yaz...">
+
+<button onclick="sendMessage()">Gönder</button>
+<button onclick="logout()">Çıkış Yap</button>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
+authDomain: "kartalhaber-49ae6.firebaseapp.com",
+projectId: "kartalhaber-49ae6",
+storageBucket: "kartalhaber-49ae6.firebasestorage.app",
+messagingSenderId: "804745909398",
+appId: "1:804745909398:web:d4ecaf7174886bbe835eb7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.register = async () => {
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+try{
+await createUserWithEmailAndPassword(auth,email,password);
+alert("Kayıt başarılı");
+}catch(e){
+alert(e.message);
+}
+
+};
+
+window.login = async () => {
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+try{
+await signInWithEmailAndPassword(auth,email,password);
+}catch(e){
+alert(e.message);
+}
+
+};
+
+window.logout = async () => {
+await signOut(auth);
+};
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+document.getElementById("auth").style.display="none";
+document.getElementById("chat").style.display="block";
+}else{
+document.getElementById("auth").style.display="block";
+document.getElementById("chat").style.display="none";
+}
+
+});
+
+window.sendMessage = async ()=>{
+
+const prompt=document.getElementById("prompt").value;
+
+if(!prompt) return;
+
+const messages=document.getElementById("messages");
+
+messages.innerHTML+=`
+<div class="msg user">${prompt}</div>
+`;
+
+document.getElementById("prompt").value="";
+
+messages.innerHTML+=`
+<div class="msg ai">Gemini API henüz bağlanmadı.</div>
+`;
+
+messages.scrollTop=messages.scrollHeight;
+
+};
+
+</script>
+
+</body>
+</html>
