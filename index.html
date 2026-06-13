@@ -3,91 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI Chat - Kesin Sürüm</title>
+    <title>KartalHaber AI Chat - Tam Özellikli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .chat-container { scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color 0.3s; }
-        .chat-container:hover { scrollbar-color: #4b5563 transparent; }
+        .chat-container { scrollbar-width: thin; scrollbar-color: #4b5563 transparent; transition: scrollbar-color 0.3s; }
         .chat-container::-webkit-scrollbar { width: 6px; }
-        .chat-container::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 20px; }
-        .chat-container:hover::-webkit-scrollbar-thumb { background-color: #4b5563; }
+        .chat-container::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 20px; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex">
 
-    <!-- GİRİŞ / KAYIT PANELİ -->
+    <!-- GİRİŞ PANELİ -->
     <div id="auth-screen" class="fixed inset-0 bg-gray-950/95 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full shadow-2xl">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white mb-2" id="auth-title">KartalHaber AI Portal</h2>
-                <p class="text-gray-400 text-sm">Sohbetlerinizin buluta kaydedilmesi için giriş yapın.</p>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">E-posta Adresi</label>
-                    <input type="email" id="auth-email" placeholder="berat@kartalhaber.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Şifre</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
-                </div>
-                <button id="btn-primary" onclick="handleAuth()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-md">Giriş Yap</button>
-                <div class="text-center pt-2">
-                    <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-sm text-blue-400 hover:underline">Hesabınız yok mu? Kayıt Olun</button>
-                </div>
-                <div id="auth-error" class="text-red-400 text-sm text-center hidden bg-red-500/10 p-2 rounded-lg border border-red-500/20"></div>
-            </div>
+            <h2 class="text-2xl font-bold text-white mb-6 text-center" id="auth-title">KartalHaber AI Portal</h2>
+            <input type="email" id="auth-email" placeholder="E-posta" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 mb-4 text-white">
+            <input type="password" id="auth-password" placeholder="Şifre" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 mb-4 text-white">
+            <button id="btn-primary" onclick="handleAuth()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition">Giriş Yap</button>
+            <div id="auth-error" class="text-red-400 text-sm text-center mt-4 hidden"></div>
         </div>
     </div>
 
     <!-- SIDEBAR -->
-    <aside id="main-sidebar" class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between p-4 hidden">
-        <div class="flex flex-col h-full">
-            <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-md mb-6">
-                <i class="fa-solid fa-plus"></i> Yeni Sohbet
-            </button>
-            <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="chat-list">
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>
-            </div>
-        </div>
-        <div class="pt-4 border-t border-gray-800 flex flex-col gap-2">
-            <div class="flex items-center justify-between text-sm text-gray-400">
-                <span id="user-display-email" class="truncate max-w-[140px] font-medium">Yükleniyor...</span>
-                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-xs flex items-center gap-1">
-                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış
-                </button>
-            </div>
-        </div>
+    <aside id="main-sidebar" class="w-64 bg-gray-900 border-r border-gray-800 p-4 hidden">
+        <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl mb-6">Yeni Sohbet</button>
+        <div id="chat-list" class="space-y-2"></div>
     </aside>
 
     <!-- ANA CHAT -->
     <main id="main-chat" class="flex-1 flex flex-col h-[100vh] p-4 hidden">
-        <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
-            <div class="flex items-center space-x-3">
-                <span class="font-bold text-lg tracking-wide text-white" id="current-chat-title">SOHBET 1</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <span class="text-xs text-green-400 flex items-center gap-1.5 font-medium bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Altyapı Güvenliği Aktif
-                </span>
-            </div>
-        </header>
-
         <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50"></div>
-
-        <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700 shadow-lg">
+        <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700">
             <input type="text" id="user-input" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
-            <button id="btn-send" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
+            <button id="btn-send" class="bg-blue-600 text-white p-3 rounded-lg w-12 h-12"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
@@ -102,47 +58,18 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-
-        // SENİN VERDİĞİN ANAHTAR
+        
+        // SENİN ANAHTARIN VE DÜZELTİLMİŞ MODEL
         const GEMINI_API_KEY = "AQ.Ab8RN6LQ-agNjaDZzu9hQkJTFdnary1bstDjCfPmhz29kqgPfA";
 
         let currentUser = null;
         let activeChatId = "sohbet_1";
-        let isLoginMode = true;
         const chatContainer = document.getElementById('chat-container');
 
-        function scrollToBottom() {
-            setTimeout(() => { chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' }); }, 100);
+        window.handleAuth = async () => {
+            try { await signInWithEmailAndPassword(auth, document.getElementById('auth-email').value, document.getElementById('auth-password').value); }
+            catch(e) { document.getElementById('auth-error').innerText = "Hata oluştu."; document.getElementById('auth-error').classList.remove('hidden'); }
         }
-
-        window.toggleAuthMode = function() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "KartalHaber AI Portal" : "Hesap Oluştur";
-            document.getElementById('btn-primary').innerText = isLoginMode ? "Giriş Yap" : "Kayıt Ol";
-            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Hesabınız yok mu? Kayıt Olun" : "Zaten hesabınız var mı? Giriş Yapın";
-        }
-
-        window.handleAuth = async function() {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-            const errorDiv = document.getElementById('auth-error');
-            errorDiv.classList.add('hidden');
-
-            if(!email || !password) {
-                errorDiv.innerText = "Lütfen alanları boş bırakmayın.";
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-            try {
-                if (isLoginMode) { await signInWithEmailAndPassword(auth, email, password); }
-                else { await createUserWithEmailAndPassword(auth, email, password); }
-            } catch (error) {
-                errorDiv.innerText = "Hata: " + error.message.replace("Firebase:", "");
-                errorDiv.classList.remove('hidden');
-            }
-        }
-
-        window.logout = function() { signOut(auth); }
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -150,141 +77,53 @@
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('main-sidebar').classList.remove('hidden');
                 document.getElementById('main-chat').classList.remove('hidden');
-                document.getElementById('user-display-email').innerText = user.email;
                 switchChat("sohbet_1");
-            } else {
-                currentUser = null;
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('main-sidebar').classList.add('hidden');
-                document.getElementById('main-chat').classList.add('hidden');
             }
         });
 
-        window.switchChat = function(chatId) {
+        window.switchChat = (chatId) => {
             activeChatId = chatId;
-            document.getElementById('current-chat-title').innerText = chatId.replace('_', ' ').toUpperCase();
-            
-            const messagesRef = ref(database, `users/${currentUser.uid}/chats/${chatId}/messages`);
-            onValue(messagesRef, (snapshot) => {
+            onValue(ref(database, `users/${currentUser.uid}/chats/${chatId}/messages`), (snapshot) => {
                 chatContainer.innerHTML = "";
                 const data = snapshot.val();
-                
-                if (!data) {
-                    chatContainer.innerHTML = `
-                        <div class="flex items-start gap-3">
-                            <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
-                            <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white">
-                                Selam Berat! Yeni kod aktif. Hadi bir şey yaz, eğer bir sorun varsa hatayı direkt ekrana basacağım.
-                            </div>
-                        </div>`;
-                    return;
-                }
-
-                Object.values(data).forEach(msg => {
-                    if (msg.sender === "user") {
-                        chatContainer.innerHTML += `
-                            <div class="flex items-start gap-3 justify-end">
-                                <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">${msg.text}</div>
-                                <div class="bg-gray-700 p-2.5 rounded-xl"><i class="fa-solid fa-user text-white"></i></div>
-                            </div>`;
-                    } else {
-                        const errorClass = msg.text.startsWith("Google API Hatası:") ? "text-red-400 font-semibold" : "text-white";
-                        chatContainer.innerHTML += `
-                            <div class="flex items-start gap-3">
-                                <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
-                                <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 ${errorClass} whitespace-pre-line">${msg.text}</div>
-                            </div>`;
-                    }
-                });
-                scrollToBottom();
-            });
-            loadChatList();
-        }
-
-        function loadChatList() {
-            const listRef = ref(database, `users/${currentUser.uid}/chats`);
-            get(listRef).then((snapshot) => {
-                const listContainer = document.getElementById('chat-list');
-                listContainer.innerHTML = '<div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>';
-                const data = snapshot.val();
-                if (!data) {
-                    listContainer.innerHTML += `<button onclick="switchChat('sohbet_1')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 bg-gray-800 text-white border-l-4 border-blue-500"><i class="fa-regular fa-comment-dots"></i> SOHBET 1</button>`;
-                    return;
-                }
-                Object.keys(data).forEach(chatId => {
-                    const isActive = chatId === activeChatId ? 'bg-gray-800 text-white border-l-4 border-blue-500' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white';
-                    listContainer.innerHTML += `<button onclick="switchChat('${chatId}')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 ${isActive}"><i class="fa-regular fa-comment-dots"></i> ${chatId.replace('_', ' ').toUpperCase()}</button>`;
+                if(data) Object.values(data).forEach(msg => {
+                    chatContainer.innerHTML += `<div class="p-3 rounded-lg ${msg.sender === 'user' ? 'bg-blue-600 ml-auto' : 'bg-gray-700'} max-w-[80%]">${msg.text}</div>`;
                 });
             });
         }
 
-        window.createNewChat = function() {
-            const listRef = ref(database, `users/${currentUser.uid}/chats`);
-            get(listRef).then((snapshot) => {
-                const data = snapshot.val();
-                let nextIndex = data ? Object.keys(data).length + 1 : 1;
-                const newChatId = `sohbet_${nextIndex}`;
-                const newMsgRef = ref(database, `users/${currentUser.uid}/chats/${newChatId}/messages`);
-                const newMsgKey = push(newMsgRef);
-                set(newMsgKey, { sender: "ai", text: `Sohbet ${nextIndex} odası açıldı.`, timestamp: Date.now() }).then(() => { switchChat(newChatId); });
-            });
-        }
-
-        window.sendMessage = async function() {
-            const inputField = document.getElementById('user-input');
-            const userMessage = inputField.value.trim();
-            if (!userMessage || !currentUser) return;
-
-            inputField.value = "";
-            const messagesRef = ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`);
-            const userMsgKey = push(messagesRef);
-            await set(userMsgKey, { sender: "user", text: userMessage, timestamp: Date.now() });
-
-            const loadingId = "load-" + Date.now();
-            chatContainer.innerHTML += `
-                <div id="${loadingId}" class="flex items-start gap-3">
-                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-spin"></i></div>
-                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">Düşünüyor...</div>
-                </div>`;
-            scrollToBottom();
+        window.sendMessage = async () => {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if(!text) return;
+            input.value = "";
+            push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "user", text: text });
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                // BURASI ÇOK ÖNEMLİ: gemini-1.5-flash yerine gemini-1.0-pro kullandık
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINI_API_KEY}`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: userMessage }]
-                        }]
-                    })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || "Bilinmeyen sunucu hatası");
-                }
-
                 const result = await response.json();
-                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-
-                if (result.candidates && result.candidates[0].content.parts[0].text) {
-                    const aiMsgKey = push(messagesRef);
-                    await set(aiMsgKey, { sender: "ai", text: result.candidates[0].content.parts[0].text, timestamp: Date.now() });
+                if(result.candidates) {
+                    const aiText = result.candidates[0].content.parts[0].text;
+                    push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: aiText });
                 } else {
-                    throw new Error("Yapay zeka boş bir yanıt döndürdü.");
+                    throw new Error("Model yanıt vermedi.");
                 }
-            } catch (error) {
-                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                const errKey = push(messagesRef);
-                await set(errKey, { sender: "ai", text: "Google API Hatası: " + error.message, timestamp: Date.now() });
+            } catch(e) {
+                push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: "Hata: " + e.message });
             }
         }
 
-        document.getElementById('btn-new-chat').addEventListener('click', createNewChat);
         document.getElementById('btn-send').addEventListener('click', sendMessage);
-        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+        document.getElementById('btn-new-chat').addEventListener('click', () => {
+            const newId = "sohbet_" + Date.now();
+            switchChat(newId);
+        });
     </script>
 </body>
 </html>
