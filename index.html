@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI Chat - Firebase Cloud</title>
+    <title>KartalHaber AI Chat - Firebase Auth & Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,9 +12,7 @@
             scrollbar-color: transparent transparent;
             transition: scrollbar-color 0.3s;
         }
-        .chat-container:hover {
-            scrollbar-color: #4b5563 transparent;
-        }
+        .chat-container:hover { scrollbar-color: #4b5563 transparent; }
         .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 20px; }
         .chat-container:hover::-webkit-scrollbar-thumb { background-color: #4b5563; }
@@ -22,109 +20,176 @@
 </head>
 <body class="bg-gray-950 text-gray-100 font-sans min-h-screen flex">
 
-    <!-- SOL MENÜ: SOHBET LİSTESİ VE YENİ SOHBET BUTONU -->
-    <aside class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between p-4 hidden md:flex">
+    <div id="auth-screen" class="fixed inset-0 bg-gray-950/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-md w-full shadow-2xl">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2" id="auth-title">KartalHaber AI'a Giriş Yap</h2>
+                <p class="text-gray-400 text-sm">Sohbetlerinizin kaydedilmesi için hesabınıza erişin.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">E-posta Adresi</label>
+                    <input type="email" id="auth-email" placeholder="ornek@email.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Şifre</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+                <button id="btn-primary" onclick="handleAuth()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-md">Giriş Yap</button>
+                
+                <div class="text-center pt-2">
+                    <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-sm text-blue-400 hover:underline">Hesabınız yok mu? Kayıt Olun</button>
+                </div>
+                <div id="auth-error" class="text-red-400 text-sm text-center hidden bg-red-500/10 p-2 rounded-lg border border-red-500/20"></div>
+            </div>
+        </div>
+    </div>
+
+    <aside id="main-sidebar" class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between p-4 hidden">
         <div class="flex flex-col h-full">
-            <!-- Yeni Sohbet Butonu -->
-            <button onclick="createNewChat()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-md mb-6">
+            <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-md mb-6">
                 <i class="fa-solid fa-plus"></i> Yeni Sohbet
             </button>
             
-            <!-- Sohbetlerin Listelendiği Alan -->
             <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="chat-list">
                 <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>
-                <!-- Dinamik sohbet listesi buraya gelecek -->
             </div>
         </div>
 
-        <!-- Kullanıcı Bilgisi -->
-        <div class="pt-4 border-t border-gray-800 flex items-center gap-2 text-sm text-gray-400">
-            <i class="fa-solid fa-user-circle text-xl text-blue-400"></i>
-            <span id="user-display-id">Kullanıcı: Yükleniyor...</span>
+        <div class="pt-4 border-t border-gray-800 flex flex-col gap-2">
+            <div class="flex items-center justify-between text-sm text-gray-400">
+                <span id="user-display-email" class="truncate max-w-[140px] font-medium">Yükleniyor...</span>
+                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+                </button>
+            </div>
         </div>
     </aside>
 
-    <!-- SAĞ TARAF: ANA CHAT EKRANI -->
-    <main class="flex-1 flex flex-col h-[100vh] p-4">
-        <!-- Üst Bar -->
+    <main id="main-chat" class="flex-1 flex flex-col h-[100vh] p-4 hidden">
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <span class="font-bold text-lg tracking-wide text-white" id="current-chat-title">Sohbet 1</span>
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-xs text-green-400 flex items-center gap-1.5 font-medium bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Firebase & Gemini Canlı
+                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Güvenli Auth Aktif
                 </span>
             </div>
         </header>
 
-        <!-- Mesajlaşma Alanı -->
-        <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50">
-            <!-- Mesajlar buraya yüklenecek -->
-        </div>
+        <div id="chat-container" class="chat-container flex-1 overflow-y-auto space-y-4 pr-2 mb-4 bg-gray-800/40 p-4 rounded-xl border border-gray-700/50"></div>
 
-        <!-- Giriş Barı -->
         <div class="flex gap-2 bg-gray-800 p-2 rounded-xl border border-gray-700 shadow-lg">
-            <input type="text" id="user-input" onkeypress="if(event.key === 'Enter') sendMessage()" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
-            <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
+            <input type="text" id="user-input" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-3 text-white focus:outline-none">
+            <button id="btn-send" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg w-12 h-12 flex items-center justify-center transition shadow-md">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </div>
     </main>
 
-    <!-- Firebase Eski Sürüm SDK'ları (Tarayıcıda sorunsuz çalışması için en kararlısı) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-    <!-- Google Gemini SDK Bağlantısı -->
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { GoogleGenAI } from "https://esm.run/@google/genai";
 
-        // Gönderdiğin ekran görüntüsündeki Firebase yapılandırma bilgilerin
+        // Bize verdiğin resmi güncel config
         const firebaseConfig = {
-            apiKey: "AIzaSyDebenlp7KcVZ2oE90iEHTT12oEuGFVGKs",
-            authDomain: "kartalhaber-49ae66.firebaseapp.com",
-            databaseURL: "https://kartalhaber-49ae66-default-rtdb.firebaseio.com",
-            projectId: "kartalhaber-49ae66",
-            storageBucket: "kartalhaber-49ae66.appspot.com",
+            apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
+            authDomain: "kartalhaber-49ae6.firebaseapp.com",
+            databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
+            projectId: "kartalhaber-49ae6",
+            storageBucket: "kartalhaber-49ae6.firebasestorage.app",
             messagingSenderId: "804745909398",
             appId: "1:804745909398:web:d4ecaf7174886bbe835eb7",
             measurementId: "G-TV8NLXQTNP"
         };
 
-        // Firebase'i Başlat
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        // Servisleri Modüler Olarak Başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-        // Korunmuş Gemini API Anahtarın
+        // Gizlenmiş Gemini API Anahtarın
         const part1 = "AQ.Ab8RN6LQ-agNjaDZzu9hQkJT";
         const part2 = "Fdnary1bstDjCfPmhz29kqgPfA";
         const myKey = part1 + part2;
         const ai = new GoogleGenAI({ apiKey: myKey });
 
-        // Kullanıcı Kimliği Yönetimi (Her tarayıcıya özel eşsiz ID)
-        let userId = localStorage.getItem('chat_user_id');
-        if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substring(2, 9);
-            localStorage.setItem('chat_user_id', userId);
-        }
-        document.getElementById('user-display-id').innerText = "ID: " + userId;
-
+        let currentUser = null;
         let activeChatId = "sohbet_1";
+        let isLoginMode = true;
+
         const chatContainer = document.getElementById('chat-container');
 
-        // Sayfayı aşağı kaydıran fonksiyon
         function scrollToBottom() {
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Firebase'den Mesajları Dinleme ve Ekrana Basma
-        function loadMessages(chatId) {
+        // Giriş ve Kayıt Ekranı Değiştirici (Toggle)
+        window.toggleAuthMode = function() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "KartalHaber AI'a Giriş Yap" : "Hesap Oluştur / Kayıt Ol";
+            document.getElementById('btn-primary').innerText = isLoginMode ? "Giriş Yap" : "Kayıt Ol";
+            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Hesabınız yok mu? Kayıt Olun" : "Zaten hesabınız var mı? Giriş Yapın";
+        }
+
+        // Auth İşlemlerini Yönetme (Login/Register)
+        window.handleAuth = async function() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.classList.add('hidden');
+
+            if(!email || !password) {
+                errorDiv.innerText = "Lütfen tüm alanları doldurun.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                errorDiv.innerText = "Hata: " + error.message.replace("Firebase:", "");
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // Oturum Çıkışı
+        window.logout = function() {
+            signOut(auth);
+        }
+
+        // Kullanıcı Durum Takibi (Giriş yaptı mı yaptıysa ekranları aç)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-sidebar').classList.remove('hidden');
+                document.getElementById('main-chat').classList.remove('hidden');
+                document.getElementById('user-display-email').innerText = user.email;
+                
+                switchChat("sohbet_1");
+            } else {
+                currentUser = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-sidebar').classList.add('hidden');
+                document.getElementById('main-chat').classList.add('hidden');
+            }
+        });
+
+        // Belirli Bir Sohbet Odasını Firebase'den Yükleme
+        window.switchChat = function(chatId) {
             activeChatId = chatId;
             document.getElementById('current-chat-title').innerText = chatId.replace('_', ' ').toUpperCase();
             
-            const messagesRef = database.ref(`chats/${userId}/${chatId}/messages`);
-            messagesRef.on('value', (snapshot) => {
+            const messagesRef = ref(database, `users/${currentUser.uid}/chats/${chatId}/messages`);
+            onValue(messagesRef, (snapshot) => {
                 chatContainer.innerHTML = "";
                 const data = snapshot.val();
                 
@@ -133,7 +198,7 @@
                         <div class="flex items-start gap-3">
                             <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
                             <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white">
-                                Bu yeni ve temiz bir sohbet odasıdır. İstediğini sorabilirsin Berat!
+                                Merhaba! Bu tamamen size özel ve şifreli yeni bir sohbet odasıdır. Sormak istediğiniz her şeyi sorabilirsiniz.
                             </div>
                         </div>`;
                     return;
@@ -160,19 +225,22 @@
                 });
                 scrollToBottom();
             });
+            loadChatList();
         }
 
-        // Firebase'deki Tüm Sohbet Odalarını Sol Menüde Listeleme
+        // Aktif Kullanıcının Tüm Geçmiş Sohbet Odalarını Sol Menüye Dizme
         function loadChatList() {
-            const listRef = database.ref(`chats/${userId}`);
-            listRef.on('value', (snapshot) => {
+            const listRef = ref(database, `users/${currentUser.uid}/chats`);
+            get(listRef).then((snapshot) => {
                 const listContainer = document.getElementById('chat-list');
                 listContainer.innerHTML = '<div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>';
                 
                 const data = snapshot.val();
                 if (!data) {
-                    // Eğer hiç sohbet yoksa varsayılan olarak bir tane oluştur
-                    createNewChat();
+                    listContainer.innerHTML += `
+                        <button onclick="switchChat('sohbet_1')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 bg-gray-800 text-white border-l-4 border-blue-500">
+                            <i class="fa-regular fa-comment-dots"></i> SOHBET 1
+                        </button>`;
                     return;
                 }
 
@@ -188,64 +256,59 @@
             });
         }
 
-        // Sohbetler Arası Geçiş Yapma
-        window.switchChat = function(chatId) {
-            loadMessages(chatId);
-            loadChatList();
-        }
-
-        // Yeni Bir Sohbet Odası Açma (Sohbet 1, Sohbet 2 mantığı)
+        // Yeni Bağımsız Oda Oluşturma (Sohbet 2, Sohbet 3...)
         window.createNewChat = function() {
-            const listRef = database.ref(`chats/${userId}`);
-            listRef.once('value', (snapshot) => {
+            const listRef = ref(database, `users/${currentUser.uid}/chats`);
+            get(listRef).then((snapshot) => {
                 const data = snapshot.val();
                 let nextIndex = 1;
                 if (data) {
-                    const keys = Object.keys(data);
-                    nextIndex = keys.length + 1;
+                    nextIndex = Object.keys(data).length + 1;
                 }
                 const newChatId = `sohbet_${nextIndex}`;
                 
-                // Firebase'e boş bir mesajla odayı kaydet
-                database.ref(`chats/${userId}/${newChatId}/messages`).push({
+                const newMsgRef = ref(database, `users/${currentUser.uid}/chats/${newChatId}/messages`);
+                const newMsgKey = push(newMsgRef);
+                set(newMsgKey, {
                     sender: "ai",
-                    text: `Sohbet ${nextIndex} başarıyla oluşturuldu. Sana nasıl yardımcı olabilirim?`,
+                    text: `Sohbet ${nextIndex} odası açıldı. Seni dinliyorum!`,
                     timestamp: Date.now()
+                }).then(() => {
+                    switchChat(newChatId);
                 });
-
-                switchChat(newChatId);
             });
         }
 
-        // Mesaj Gönderme ve Firebase'e Eş zamanlı Kaydetme
+        // Mesaj Gönderme Tetikleyicileri
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
             const userMessage = inputField.value.trim();
-            if (!userMessage) return;
+            if (!userMessage || !currentUser) return;
 
             inputField.value = "";
 
-            // 1. Kullanıcı mesajını Firebase'e kaydet (Arayüz otomatik güncellenecek)
-            const chatRef = database.ref(`chats/${userId}/${activeChatId}/messages`);
-            chatRef.push({
+            // 1. Kullanıcı mesajını odanın altına push et
+            const messagesRef = ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`);
+            const userMsgKey = push(messagesRef);
+            await set(userMsgKey, {
                 sender: "user",
                 text: userMessage,
                 timestamp: Date.now()
             });
 
-            // Yükleniyor simgesini anlık göster
+            // Yükleniyor simgesi ekle
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3">
                     <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-spin"></i></div>
                     <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Cevap yazılıyor...
+                        Düşünüyor...
                     </div>
                 </div>`;
             scrollToBottom();
 
             try {
-                // 2. Gemini Yapay Zekadan yanıtı al
+                // 2. Gemini Yapay Zekadan yanıt al
                 const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
                     contents: userMessage,
@@ -253,8 +316,9 @@
 
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
 
-                // 3. Yapay zeka yanıtını Firebase'e kaydet (Arayüz otomatik güncellenecek)
-                chatRef.push({
+                // 3. Yapay zeka yanıtını odanın altına push et
+                const aiMsgKey = push(messagesRef);
+                await set(aiMsgKey, {
                     sender: "ai",
                     text: response.text,
                     timestamp: Date.now()
@@ -262,17 +326,21 @@
 
             } catch (error) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                chatRef.push({
+                const errKey = push(messagesRef);
+                await set(errKey, {
                     sender: "ai",
-                    text: "Üzgünüm, yanıt oluşturulurken bir bulut bağlantı hatası yaşandı.",
+                    text: "Bağlantı veya yanıt oluşturma hatası oluştu.",
                     timestamp: Date.now()
                 });
             }
         }
 
-        // İlk Kurulum Başlangıcı
-        loadMessages(activeChatId);
-        loadChatList();
+        // Buton Event Listener Eşlemeleri
+        document.getElementById('btn-new-chat').addEventListener('click', createNewChat);
+        document.getElementById('btn-send').addEventListener('click', sendMessage);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMessage();
+        });
     </script>
 </body>
 </html>
