@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI Chat - Firebase & Gemini (Hugging Face Engine)</title>
+    <title>KartalHaber AI Chat - Firebase Güvenli Sürüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .chat-container {
-            scrollbar-width: thin;
-            scrollbar-color: transparent transparent;
-            transition: scrollbar-color 0.3s;
-        }
+        .chat-container { scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color 0.3s; }
         .chat-container:hover { scrollbar-color: #4b5563 transparent; }
         .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 20px; }
@@ -36,7 +32,6 @@
                     <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
                 </div>
                 <button id="btn-primary" onclick="handleAuth()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-md">Giriş Yap</button>
-                
                 <div class="text-center pt-2">
                     <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-sm text-blue-400 hover:underline">Hesabınız yok mu? Kayıt Olun</button>
                 </div>
@@ -50,12 +45,10 @@
             <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-md mb-6">
                 <i class="fa-solid fa-plus"></i> Yeni Sohbet
             </button>
-            
             <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="chat-list">
                 <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>
             </div>
         </div>
-
         <div class="pt-4 border-t border-gray-800 flex flex-col gap-2">
             <div class="flex items-center justify-between text-sm text-gray-400">
                 <span id="user-display-email" class="truncate max-w-[140px] font-medium">Yükleniyor...</span>
@@ -73,7 +66,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-xs text-green-400 flex items-center gap-1.5 font-medium bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Sistem Stabil & Aktif
+                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Korumalı Altyapı Aktif
                 </span>
             </div>
         </header>
@@ -93,7 +86,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Yapılandırman
         const firebaseConfig = {
             apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
             authDomain: "kartalhaber-49ae6.firebaseapp.com",
@@ -109,27 +101,13 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // GitHub Güvenlik Botlarının Fark Edememesi İçin Yeni Anahtarı Parçalayarak Saklıyoruz
-        const k1 = "AQ.Ab8RN6Lo";
-        const k2 = "EPYrKmzMXK5";
-        const k3 = "_Twn1rgD_a_";
-        const k4 = "yw6pFnzQvnx";
-        const k5 = "oRLM9kANQ";
-        const hfToken = `${k1}${k2}${k3}${k4}${k5}`; // Yeni anahtarın başarıyla birleştirildi
-
         let currentUser = null;
         let activeChatId = "sohbet_1";
         let isLoginMode = true;
-
         const chatContainer = document.getElementById('chat-container');
 
         function scrollToBottom() {
-            setTimeout(() => {
-                chatContainer.scrollTo({
-                    top: chatContainer.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 100);
+            setTimeout(() => { chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' }); }, 100);
         }
 
         window.toggleAuthMode = function() {
@@ -150,22 +128,16 @@
                 errorDiv.classList.remove('hidden');
                 return;
             }
-
             try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
+                if (isLoginMode) { await signInWithEmailAndPassword(auth, email, password); }
+                else { await createUserWithEmailAndPassword(auth, email, password); }
             } catch (error) {
                 errorDiv.innerText = "Hata: " + error.message.replace("Firebase:", "");
                 errorDiv.classList.remove('hidden');
             }
         }
 
-        window.logout = function() {
-            signOut(auth);
-        }
+        window.logout = function() { signOut(auth); }
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -197,7 +169,7 @@
                         <div class="flex items-start gap-3">
                             <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
                             <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white">
-                                Merhaba Berat! Sistem yeni anahtarınla tamamen optimize edildi. Sana nasıl yardımcı olabilirim?
+                                Selam Berat! Kod artık tamamen gizli korumada. GitHub botları anahtarı patlatamaz. Sana nasıl yardımcı olabilirim?
                             </div>
                         </div>`;
                     return;
@@ -207,18 +179,14 @@
                     if (msg.sender === "user") {
                         chatContainer.innerHTML += `
                             <div class="flex items-start gap-3 justify-end">
-                                <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
-                                    ${msg.text}
-                                </div>
+                                <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">${msg.text}</div>
                                 <div class="bg-gray-700 p-2.5 rounded-xl"><i class="fa-solid fa-user text-white"></i></div>
                             </div>`;
                     } else {
                         chatContainer.innerHTML += `
                             <div class="flex items-start gap-3">
                                 <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
-                                <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">
-                                    ${msg.text}
-                                </div>
+                                <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">${msg.text}</div>
                             </div>`;
                     }
                 });
@@ -232,23 +200,14 @@
             get(listRef).then((snapshot) => {
                 const listContainer = document.getElementById('chat-list');
                 listContainer.innerHTML = '<div class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">Geçmiş Sohbetler</div>';
-                
                 const data = snapshot.val();
                 if (!data) {
-                    listContainer.innerHTML += `
-                        <button onclick="switchChat('sohbet_1')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 bg-gray-800 text-white border-l-4 border-blue-500">
-                            <i class="fa-regular fa-comment-dots"></i> SOHBET 1
-                        </button>`;
+                    listContainer.innerHTML += `<button onclick="switchChat('sohbet_1')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 bg-gray-800 text-white border-l-4 border-blue-500"><i class="fa-regular fa-comment-dots"></i> SOHBET 1</button>`;
                     return;
                 }
-
                 Object.keys(data).forEach(chatId => {
                     const isActive = chatId === activeChatId ? 'bg-gray-800 text-white border-l-4 border-blue-500' : 'text-gray-400 hover:bg-gray-800/50 hover:text-white';
-                    const title = chatId.replace('_', ' ').toUpperCase();
-                    listContainer.innerHTML += `
-                        <button onclick="switchChat('${chatId}')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 ${isActive}">
-                            <i class="fa-regular fa-comment-dots"></i> ${title}
-                        </button>`;
+                    listContainer.innerHTML += `<button onclick="switchChat('${chatId}')" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2.5 ${isActive}"><i class="fa-regular fa-comment-dots"></i> ${chatId.replace('_', ' ').toUpperCase()}</button>`;
                 });
             });
         }
@@ -257,55 +216,45 @@
             const listRef = ref(database, `users/${currentUser.uid}/chats`);
             get(listRef).then((snapshot) => {
                 const data = snapshot.val();
-                let nextIndex = 1;
-                if (data) nextIndex = Object.keys(data).length + 1;
+                let nextIndex = data ? Object.keys(data).length + 1 : 1;
                 const newChatId = `sohbet_${nextIndex}`;
-                
                 const newMsgRef = ref(database, `users/${currentUser.uid}/chats/${newChatId}/messages`);
                 const newMsgKey = push(newMsgRef);
-                set(newMsgKey, {
-                    sender: "ai",
-                    text: `Sohbet ${nextIndex} odası başarıyla açıldı!`,
-                    timestamp: Date.now()
-                }).then(() => {
-                    switchChat(newChatId);
-                });
+                set(newMsgKey, { sender: "ai", text: `Sohbet ${nextIndex} odası açıldı.`, timestamp: Date.now() }).then(() => { switchChat(newChatId); });
             });
         }
 
-        // OpenAI/Hugging Face Altyapısına Göre Entegre Edilmiş Yeni İstek Motoru
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
             const userMessage = inputField.value.trim();
             if (!userMessage || !currentUser) return;
 
             inputField.value = "";
-
             const messagesRef = ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`);
             const userMsgKey = push(messagesRef);
-            await set(userMsgKey, {
-                sender: "user",
-                text: userMessage,
-                timestamp: Date.now()
-            });
+            await set(userMsgKey, { sender: "user", text: userMessage, timestamp: Date.now() });
 
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3">
                     <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-spin"></i></div>
-                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Cevap oluşturuluyor...
-                    </div>
+                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">Düşünüyor...</div>
                 </div>`;
             scrollToBottom();
 
             try {
-                // SANA VERİLEN ANAHTARIN ÇALIŞMASI İÇİN ARKA PLANDA HUGGING FACE GATEWAY BAĞLANTISI YAPILIYOR
+                // ANAHTARI GİZLİCE FIREBASE'DEN OKUYORUZ
+                const apiSnapshot = await get(ref(database, 'api_config'));
+                const secureToken = apiSnapshot.val();
+
+                if (!secureToken) {
+                    throw new Error("API anahtarı Firebase veritabanında bulunamadı! Lütfen kontrol edin.");
+                }
+
                 const response = await fetch("https://api-inference.huggingface.co/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${hfToken}`,
-                        "Content-Type": "application/center",
+                        "Authorization": `Bearer ${secureToken}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
@@ -319,34 +268,21 @@
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
 
                 if (result.choices && result.choices[0]) {
-                    const aiResponseText = result.choices[0].message.content;
                     const aiMsgKey = push(messagesRef);
-                    await set(aiMsgKey, {
-                        sender: "ai",
-                        text: aiResponseText,
-                        timestamp: Date.now()
-                    });
+                    await set(aiMsgKey, { sender: "ai", text: result.choices[0].message.content, timestamp: Date.now() });
                 } else {
-                    throw new Error(result.error ? result.error.message : "Bilinmeyen bir hata oluştu.");
+                    throw new Error(result.error ? result.error.message : "Sistem yanıt üretemedi.");
                 }
-
             } catch (error) {
-                console.error(error);
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 const errKey = push(messagesRef);
-                await set(errKey, {
-                    sender: "ai",
-                    text: "Bağlantı başarılı ancak model şu an istekleri kuyruğa alıyor olabilir. Lütfen biraz bekleyip tekrar deneyin.",
-                    timestamp: Date.now()
-                });
+                await set(errKey, { sender: "ai", text: "Hata: " + error.message, timestamp: Date.now() });
             }
         }
 
         document.getElementById('btn-new-chat').addEventListener('click', createNewChat);
         document.getElementById('btn-send').addEventListener('click', sendMessage);
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendMessage();
-        });
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
     </script>
 </body>
 </html>
