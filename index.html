@@ -17,10 +17,10 @@
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/50x50?text=AI'">
-                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (Sıfır Kurulum)</span>
+                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (Kesin Çözüm)</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> %100 Kararlı Bağlantı
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Sistem Aktif
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Sistem 0'dan başarıyla kuruldu Berat! API anahtarı yok, engel yok, kısıtlama yok. Bana dilediğin soruyu sorabilirsin!
+                    Merhaba Berat! Tüm JSON ve API anahtarı hatalarını geride bıraktık. Doğrudan ve kesintisiz iletişim hattımız hazır. Bana istediğini sorabilirsin!
                 </div>
             </div>
         </div>
@@ -42,8 +42,8 @@
     </div>
 
     <script>
-        // Tarayıcı üzerinde doğrudan ve ücretsiz çalışan yapay zeka havuzu
-        const API_URL = "https://text.pollinations.ai/";
+        // JSON hatası vermeyen, ham metin dönen en kararlı ücretsiz yapay zeka motoru
+        const API_URL = "https://text.jbapi.workers.dev/?q=";
 
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
@@ -53,7 +53,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
-            // Kullanıcı mesajını ekrana yaz
+            // Kullanıcı Mesajı
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -64,33 +64,31 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Düşünüyor animasyonu
+            // Yükleniyor Durumu
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3">
-                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-spin"></i></div>
+                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-pulse"></i></div>
                     <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Yazıyor...
+                        Cevap hazırlanıyor...
                     </div>
                 </div>
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // Doğrudan anahtarsız, sansürsüz ve engelsiz API sorgusu
-                const response = await fetch(`${API_URL}${encodeURIComponent(userMessage)}?json=true`);
-                const data = await response.json();
+                // Doğrudan istek atıyoruz, JSON karmaşası yok
+                const response = await fetch(`${API_URL}${encodeURIComponent(userMessage)}`);
+                const aiResponse = await response.text();
                 
                 document.getElementById(loadingId).remove();
-                
-                let aiResponse = data.response || "Yanıt alınamadı.";
 
-                // Yapay zeka yanıtını ekrana yaz
+                // Yapay Zeka Yanıtı
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">
-                            ${aiResponse}
+                            ${aiResponse || "Sistem yoğun, lütfen kelimeyi değiştirip tekrar yazın."}
                         </div>
                     </div>
                 `;
@@ -100,7 +98,7 @@
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Bir hata oluştu, lütfen tekrar yazın.
+                            Bağlantı anlık dalgalandı, lütfen tekrar gönderin.
                         </div>
                     </div>
                 `;
