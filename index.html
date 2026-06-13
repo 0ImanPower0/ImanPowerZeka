@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI - Teşhis</title>
+    <title>KartalHaber AI Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .chat-container { scrollbar-width: thin; scrollbar-color: #374151 transparent; }
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 20px; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 flex h-screen">
@@ -94,14 +96,14 @@
                         "Authorization": `Bearer ${GROQ_API_KEY}` 
                     },
                     body: JSON.stringify({
-                        model: "llama3-8b-8192",
+                        // BURAYI GÜNCELLEDİK: Eski model yerine yeni model!
+                        model: "llama-3.3-70b-versatile",
                         messages: [{ role: "user", content: text }]
                     })
                 });
 
                 const result = await response.json();
                 
-                // HATA TESPİTİ
                 if (!response.ok) {
                     throw new Error(result.error?.message || "Bilinmeyen API Hatası");
                 }
@@ -110,7 +112,6 @@
                 push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: aiText });
 
             } catch(e) {
-                // HATAYI BURADA GÖRÜCEZ
                 push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: "HATA: " + e.message });
             }
         };
