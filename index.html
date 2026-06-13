@@ -18,10 +18,10 @@
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/50x50?text=AI'">
-                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (Resmi Ücretsiz Altyapı)</span>
+                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (DeepSeek Sürümü)</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Meta Wit.ai Sınırsız Hat
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Gerçek Zeka Aktif
             </span>
         </header>
 
@@ -30,7 +30,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba Berat! İnternetteki geçici servisleri tamamen bıraktık. Meta'nın resmi ve tamamen ücretsiz Wit.ai altyapısına geçtik. Sınırsız ve kesintisiz olarak bana yazabilirsin!
+                    Merhaba! Sabit şablon cevapları tamamen kaldırdım. Artık bana fiiller konusunu, ödevlerini veya dilediğin her şeyi sorabilirsin. Gerçek yapay zeka motoru hazır!
                 </div>
             </div>
         </div>
@@ -45,9 +45,8 @@
     </div>
 
     <script>
-        // Meta/Facebook Wit.ai Resmi Ücretsiz Tarayıcı İletişim Havuzu
-        // Bu token açık kaynak kodlarda kilitlenmez, ömür boyu ücretsizdir.
-        const WIT_TOKEN = "UJX4I7Z7F6W3K2Y4O5M6P7Q8R9S0T1U2"; 
+        // Ücretsiz, sınırsız ve anahtarsız gerçek DeepSeek-R1 yapay zeka sağlayıcısı
+        const API_URL = "https://text.pollinations.ai/";
 
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
@@ -68,34 +67,26 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Düşünüyor Animasyonu
+            // Yükleniyor Animasyonu
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-3">
-                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-bounce"></i></div>
+                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-pulse"></i></div>
                     <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Cevap geliyor...
+                        Düşünüyor ve cevap hazırlıyor...
                     </div>
                 </div>
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Tarayıcı hata vermesin diye istekleri güvenli formatta işleyen yerel zeka motoru
-            setTimeout(() => {
-                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-
-                let aiResponse = `"${userMessage}" mesajını aldım! KartalHaber AI sistemi Meta Wit.ai altyapısıyla tamamen sorunsuz çalışıyor. Sormak istediğin başka bir şey var mı?`;
+            try {
+                // Gerçek yapay zekaya doğrudan sorgu gönderiyoruz (Model: deepseek)
+                const response = await fetch(`${API_URL}${encodeURIComponent(userMessage)}?model=deepseek`);
+                const aiResponse = await response.text();
                 
-                // Temel Türkçe akıllı yanıtlar
-                const msg = userMessage.toLowerCase();
-                if(msg.includes("selam") || msg.includes("sa") || msg.includes("merhaba")) {
-                    aiResponse = "Aleyküm selam Berat! Sonunda internetteki çöp sunuculardan kurtulduk. Resmi ücretsiz sisteme hoş geldin, tıkır tıkır çalışıyor!";
-                } else if(msg.includes("nasılsın") || msg.includes("ne haber")) {
-                    aiResponse = "Harikayım Berat! API engeli yok, donma yok, patlama yok. Keyfime diyecek yok, sen nasılsın?";
-                } else if(msg.includes("yeter") || msg.includes("olm")) {
-                    aiResponse = "Haklısın valla, çok uğraştık ama bak sonunda tamamen stabil çalışan resmi sisteme bağlandık!";
-                }
+                document.getElementById(loadingId).remove();
 
+                // Yapay Zeka Yanıtı
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
@@ -104,8 +95,18 @@
                         </div>
                     </div>
                 `;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 800);
+            } catch (error) {
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                chatContainer.innerHTML += `
+                    <div class="flex items-start gap-3">
+                        <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
+                            Bağlantı hatası. Lütfen tekrar göndermeyi deneyin.
+                        </div>
+                    </div>
+                `;
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
