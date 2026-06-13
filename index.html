@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI Chat - Güvenli Sürüm</title>
+    <title>KartalHaber AI Chat - Kesin Sürüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -66,7 +66,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-xs text-green-400 flex items-center gap-1.5 font-medium bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Korumalı Altyapı Aktif
+                    <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Altyapı Güvenliği Aktif
                 </span>
             </div>
         </header>
@@ -86,7 +86,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Yapılandırması
+        // Firebase Kimlik Bilgilerin
         const firebaseConfig = {
             apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
             authDomain: "kartalhaber-49ae6.firebaseapp.com",
@@ -170,7 +170,7 @@
                         <div class="flex items-start gap-3">
                             <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
                             <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white">
-                                Selam Berat! Sistem korumaya alındı, yapay zeka hazır. Nasıl yardımcı olabilirim?
+                                Selam Berat! Kod ve anahtar koruma altına alındı. Yapay zeka şu an aktif. Nasıl yardımcı olabilirim kanka?
                             </div>
                         </div>`;
                     return;
@@ -244,15 +244,15 @@
             scrollToBottom();
 
             try {
-                // 1. Firebase'e eklediğin api_config alanından gizli anahtarı çekiyoruz
+                // Veritabanındaki api_config alanından şifreyi güvenle çekiyoruz
                 const apiSnapshot = await get(ref(database, 'api_config'));
                 const secureToken = apiSnapshot.val();
 
                 if (!secureToken) {
-                    throw new Error("Firebase'de api_config anahtarı bulunamadı.");
+                    throw new Error("Firebase veritabanında 'api_config' anahtarı bulunamadı.");
                 }
 
-                // 2. Çektiğimiz anahtarı doğrudan Google Gemini API uç noktasına gönderiyoruz
+                // ARTIK DOĞRUDAN GEMINI PORTUNA GÜVENLİ İSTEK ATIYORUZ
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secureToken}`, {
                     method: "POST",
                     headers: {
@@ -266,18 +266,18 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error("API isteği başarısız oldu. Lütfen anahtarınızı veya internetinizi kontrol edin.");
+                    throw new Error("Gemini API bağlantısı reddedildi. Anahtarınızı kontrol edin.");
                 }
 
                 const result = await response.json();
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
 
-                // Gemini yanıt formatına uygun olarak çıktıyı alıyoruz
+                // Gelen veriyi çözüp ekrana basıyoruz
                 if (result.candidates && result.candidates[0].content.parts[0].text) {
                     const aiMsgKey = push(messagesRef);
                     await set(aiMsgKey, { sender: "ai", text: result.candidates[0].content.parts[0].text, timestamp: Date.now() });
                 } else {
-                    throw new Error("Yapay zeka motorundan boş yanıt döndü.");
+                    throw new Error("Model boş bir yanıt döndürdü.");
                 }
             } catch (error) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
