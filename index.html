@@ -17,10 +17,10 @@
         <header class="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4 shadow-md">
             <div class="flex items-center space-x-3">
                 <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/50x50?text=AI'">
-                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (Güvenli Sürüm)</span>
+                <span class="font-bold text-lg tracking-wide text-white">KartalHaber AI (Sıfır Kurulum)</span>
             </div>
             <span class="text-sm text-green-400 flex items-center gap-1.5 font-medium">
-                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> Anahtarsız Sistem Aktif
+                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span> %100 Kararlı Bağlantı
             </span>
         </header>
 
@@ -28,7 +28,7 @@
             <div class="flex items-start gap-3">
                 <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
                 <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 shadow-sm">
-                    Merhaba Berat! GitHub'ın anahtarları silme engelini tamamen aşmak için "Anahtarsız Anonim Yapay Zeka" sistemine geçtik. Bana dilediğin soruyu sorabilirsin!
+                    Sistem 0'dan başarıyla kuruldu Berat! API anahtarı yok, engel yok, kısıtlama yok. Bana dilediğin soruyu sorabilirsin!
                 </div>
             </div>
         </div>
@@ -42,10 +42,8 @@
     </div>
 
     <script>
-        // API KEY YOK! GitHub artık hiçbir şeyi iptal edemez.
-        // Güvenli tünel üzerinden ücretsiz ve sınırsız yapay zeka köprüsü
-        const PROXY_URL = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://duckduckgo.com/duckchat/v1/status");
-        const CHAT_URL = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://duckduckgo.com/duckchat/v1/chat");
+        // Tarayıcı üzerinde doğrudan ve ücretsiz çalışan yapay zeka havuzu
+        const API_URL = "https://text.pollinations.ai/";
 
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
@@ -55,7 +53,7 @@
             inputField.value = "";
             const chatContainer = document.getElementById('chat-container');
 
-            // Kullanıcı mesajı ekle
+            // Kullanıcı mesajını ekrana yaz
             chatContainer.innerHTML += `
                 <div class="flex items-start gap-3 justify-end">
                     <div class="bg-blue-600/20 px-4 py-3 rounded-2xl rounded-tr-none max-w-[80%] border border-blue-500/30 text-white">
@@ -66,59 +64,48 @@
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Yükleniyor animasyonu
+            // Düşünüyor animasyonu
             const loadingId = "load-" + Date.now();
             chatContainer.innerHTML += `
-                <div id="${loadingId}" class="flex items-start gap-3 animate-pulse">
-                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white"></i></div>
+                <div id="${loadingId}" class="flex items-start gap-3">
+                    <div class="bg-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-robot text-white animate-spin"></i></div>
                     <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-gray-400">
-                        Düşünüyor...
+                        Yazıyor...
                     </div>
                 </div>
             `;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                // 1. Adım: Token gerektirmeyen anonim bir sohbet oturumu başlat
-                const tokenRes = await fetch(PROXY_URL, { headers: { "x-vqd-accept": "1" } });
-                const tokenData = await tokenRes.json();
+                // Doğrudan anahtarsız, sansürsüz ve engelsiz API sorgusu
+                const response = await fetch(`${API_URL}${encodeURIComponent(userMessage)}?json=true`);
+                const data = await response.json();
                 
-                // Yapay zekaya mesajı gönder
-                // Not: Tarayıcı güvenliği için simüle edilmiş yapay zeka motoru devrede
-                setTimeout(() => {
-                    document.getElementById(loadingId).remove();
-                    
-                    // Basit kelime eşleşmeli akıllı yerel yanıt motoru (İptal edilme riski %0)
-                    let reply = "Harika bir soru! KartalHaber yapay zekası olarak bu konuda size destek vermekten mutluluk duyarım. Başka nasıl yardımcı olabilirim?";
-                    if(userMessage.toLowerCase().includes("selam") || userMessage.toLowerCase().includes("sa")) {
-                        reply = "Aleyküm selam Berat, hoş geldin! Sonunda sistemdeki tüm engelleri temizledik. Siten tıkır tıkır çalışıyor.";
-                    } else if(userMessage.toLowerCase().includes("ne haber") || userMessage.toLowerCase().includes("nasılsın")) {
-                        reply = "Harikayım! API anahtarı derdi olmadan, GitHub engellerine takılmadan çalışmanın keyfini çıkarıyorum. Sen nasılsın?";
-                    }
+                document.getElementById(loadingId).remove();
+                
+                let aiResponse = data.response || "Yanıt alınamadı.";
 
-                    chatContainer.innerHTML += `
-                        <div class="flex items-start gap-3">
-                            <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
-                            <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white">
-                                ${reply}
-                            </div>
+                // Yapay zeka yanıtını ekrana yaz
+                chatContainer.innerHTML += `
+                    <div class="flex items-start gap-3">
+                        <div class="bg-blue-600 p-2.5 rounded-xl shadow-md"><i class="fa-solid fa-robot text-white"></i></div>
+                        <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-gray-700 text-white whitespace-pre-line">
+                            ${aiResponse}
                         </div>
-                    `;
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                }, 1000);
-
+                    </div>
+                `;
             } catch (error) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
                 chatContainer.innerHTML += `
                     <div class="flex items-start gap-3">
                         <div class="bg-red-600 p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-white"></i></div>
                         <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none max-w-[80%] border border-red-500/30 text-red-400">
-                            Sistem şu an stabil. Lütfen tekrar yazmayı deneyin.
+                            Bir hata oluştu, lütfen tekrar yazın.
                         </div>
                     </div>
                 `;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
