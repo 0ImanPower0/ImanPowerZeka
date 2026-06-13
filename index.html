@@ -3,58 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KartalHaber AI | Modern Portal</title>
+    <title>KartalHaber AI | Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Markdown Desteği İçin -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .chat-container { scrollbar-width: thin; scrollbar-color: #475569 transparent; }
-        .chat-container::-webkit-scrollbar { width: 6px; }
-        .chat-container::-webkit-scrollbar-thumb { background-color: #475569; border-radius: 20px; }
-        /* Markdown Stilleri */
-        .ai-message pre { background: #1e293b; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0; }
-        .ai-message code { font-family: monospace; color: #38bdf8; }
-        .ai-message p { margin-bottom: 0.5rem; }
-        .ai-message ul { list-style: disc; padding-left: 1.5rem; }
+        .ai-message pre { background: #1e293b; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+        .auth-overlay { backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 flex h-screen overflow-hidden">
 
-    <!-- SIDEBAR -->
+    <!-- Auth Ekranı -->
+    <div id="auth-overlay" class="auth-overlay fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 hidden">
+        <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-96 shadow-2xl">
+            <h2 id="auth-title" class="text-2xl font-bold text-white mb-6">Giriş Yap</h2>
+            <input type="email" id="email" placeholder="E-posta" class="w-full bg-slate-800 p-3 rounded-lg mb-4 text-white border border-slate-700">
+            <input type="password" id="password" placeholder="Şifre" class="w-full bg-slate-800 p-3 rounded-lg mb-6 text-white border border-slate-700">
+            <button id="btn-auth" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mb-4">Giriş Yap</button>
+            <p class="text-sm text-center text-slate-400 cursor-pointer" onclick="toggleAuth()">Hesabın yok mu? <span class="text-blue-400 underline">Kayıt Ol</span></p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
     <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col p-5">
-        <h1 class="text-xl font-bold text-white mb-8 tracking-tight"><i class="fa-solid fa-robot mr-2 text-blue-500"></i>KartalHaber AI</h1>
-        <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl mb-6 shadow-lg shadow-blue-900/20 transition-all">
-            <i class="fa-solid fa-plus mr-2"></i> Yeni Sohbet
-        </button>
-        <div id="chat-list" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+        <h1 class="text-xl font-bold text-white mb-8"><i class="fa-solid fa-robot mr-2 text-blue-500"></i>KartalHaber AI</h1>
+        <button id="btn-new-chat" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl mb-6"><i class="fa-solid fa-plus mr-2"></i> Yeni Sohbet</button>
+        <div id="chat-list" class="flex-1 overflow-y-auto space-y-2"></div>
+        <button onclick="logout()" class="text-slate-500 hover:text-red-400 mt-4 text-sm"><i class="fa-solid fa-right-from-bracket mr-2"></i> Çıkış Yap</button>
     </aside>
 
-    <!-- CHAT PANELİ -->
-    <main class="flex-1 flex flex-col h-full bg-slate-950">
-        <div id="chat-container" class="chat-container flex-1 overflow-y-auto p-6 space-y-6">
-            <!-- Mesajlar buraya gelecek -->
-        </div>
+    <!-- Chat -->
+    <main class="flex-1 flex flex-col bg-slate-950">
+        <div id="chat-container" class="chat-container flex-1 overflow-y-auto p-6 space-y-6"></div>
         <div class="p-4 bg-slate-900/50 border-t border-slate-800">
-            <div class="max-w-4xl mx-auto flex gap-3 bg-slate-900 p-2 rounded-2xl border border-slate-700 focus-within:border-blue-500 transition-all">
-                <input type="text" id="user-input" placeholder="Bir şeyler sorun..." class="flex-1 bg-transparent px-4 py-2 text-white focus:outline-none placeholder-slate-500">
-                <button id="btn-send" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl transition-all">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+            <div class="max-w-4xl mx-auto flex gap-3 bg-slate-900 p-2 rounded-2xl border border-slate-700">
+                <input type="text" id="user-input" placeholder="Bir şeyler yazın..." class="flex-1 bg-transparent px-4 py-2 text-white focus:outline-none">
+                <button id="btn-send" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDEbenlp7KcVZ2oE90iEHTTl2oEuGFVGKs",
             authDomain: "kartalhaber-49ae6.firebaseapp.com",
             databaseURL: "https://kartalhaber-49ae6-default-rtdb.firebaseio.com",
-            projectId: "kartalhaber-49ae6"
+            projectId: "kartalhaber-49ae6",
+            storageBucket: "kartalhaber-49ae6.appspot.com",
+            messagingSenderId: "804745909398",
+            appId: "1:804745909398:web:d4ecaf7174886bbe835eb7"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -63,15 +66,43 @@
         const GROQ_API_KEY = "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";
 
         let currentUser = null;
-        let activeChatId = "sohbet_1";
+        let activeChatId = null;
+        let isLogin = true;
 
+        // Auth Kontrol
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
+                document.getElementById('auth-overlay').classList.add('hidden');
                 loadChatList();
-                switchChat("sohbet_1");
+            } else {
+                document.getElementById('auth-overlay').classList.remove('hidden');
             }
         });
+
+        window.toggleAuth = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Giriş Yap" : "Kayıt Ol";
+            document.getElementById('btn-auth').innerText = isLogin ? "Giriş Yap" : "Kayıt Ol";
+        };
+
+        document.getElementById('btn-auth').onclick = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(isLogin) signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
+            else createUserWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
+        };
+
+        window.logout = () => signOut(auth);
+
+        // Sohbet Mantığı
+        document.getElementById('btn-new-chat').onclick = () => {
+            const chatName = prompt("Sohbet ismi girin:");
+            if(!chatName) return;
+            const newChatKey = Date.now();
+            set(ref(database, `users/${currentUser.uid}/chats/${newChatKey}`), { name: chatName });
+            switchChat(newChatKey);
+        };
 
         window.switchChat = (chatId) => {
             activeChatId = chatId;
@@ -81,14 +112,8 @@
                 const data = snapshot.val();
                 if(data) Object.values(data).forEach(msg => {
                     const isUser = msg.sender === 'user';
-                    container.innerHTML += `
-                        <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
-                            <div class="${isUser ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 ai-message'} p-4 rounded-2xl max-w-[80%] shadow-lg">
-                                ${isUser ? msg.text : marked.parse(msg.text)}
-                            </div>
-                        </div>`;
+                    container.innerHTML += `<div class="flex ${isUser ? 'justify-end' : 'justify-start'}"><div class="${isUser ? 'bg-blue-600' : 'bg-slate-800'} p-4 rounded-xl max-w-[80%]">${isUser ? msg.text : marked.parse(msg.text)}</div></div>`;
                 });
-                container.scrollTop = container.scrollHeight;
             });
         };
 
@@ -97,36 +122,32 @@
                 const list = document.getElementById('chat-list');
                 list.innerHTML = "";
                 const data = snapshot.val();
-                if(data) Object.keys(data).forEach(id => {
-                    list.innerHTML += `<button onclick="switchChat('${id}')" class="w-full text-left p-3 hover:bg-slate-800 rounded-lg text-sm text-slate-400 hover:text-white transition-colors truncate">Sohbet: ${id.split('_')[1]}</button>`;
+                if(data) Object.entries(data).forEach(([id, val]) => {
+                    list.innerHTML += `<button onclick="switchChat('${id}')" class="w-full text-left p-3 hover:bg-slate-800 rounded-lg text-sm truncate text-slate-300"><i class="fa-solid fa-comment mr-2"></i> ${val.name}</button>`;
                 });
             });
         }
 
         document.getElementById('btn-send').onclick = async () => {
+            if(!activeChatId) return alert("Önce bir sohbet seçin veya oluşturun!");
             const input = document.getElementById('user-input');
             const text = input.value.trim();
             if(!text) return;
             input.value = "";
             push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "user", text: text });
-
+            
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_API_KEY}` },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [{ role: "user", content: text }]
-                    })
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{ role: "user", content: text }] })
                 });
                 const result = await response.json();
                 push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: result.choices[0].message.content });
             } catch(e) {
-                push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: "**Hata:** Sistem şu an yanıt veremiyor." });
+                push(ref(database, `users/${currentUser.uid}/chats/${activeChatId}/messages`), { sender: "ai", text: "Hata oluştu." });
             }
         };
-
-        document.getElementById('btn-new-chat').onclick = () => switchChat("sohbet_" + Date.now());
     </script>
 </body>
 </html>
