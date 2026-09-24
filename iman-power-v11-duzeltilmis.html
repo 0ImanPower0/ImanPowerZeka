@@ -1,0 +1,2412 @@
+[cite: 15]<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>İman Power - AI Eğitim & Ders Portalı</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX Matematik Sembol Render Desteği -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Cropper.js Görsel Kırpma Kütüphanesi -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <!-- PDF.js PDF Test Destek Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --card-bg: rgba(15, 23, 42, 0.82);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-glow: rgba(37, 99, 235, 0.35);
+      --ai-purple: #8b5cf6;
+      --ai-glow: rgba(139, 92, 246, 0.3);
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%; width: 100%; overflow: hidden; background: #010308; color: var(--text-main);
+    }
+
+    #app-container {
+      width: 100%; max-width: 500px; height: 100%;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.12), transparent 380px),
+        radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.15), transparent 380px),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent 450px);
+      position: relative; display: flex; flex-direction: column;
+      margin: 0 auto; border-left: 1px solid var(--card-border); border-right: 1px solid var(--card-border);
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 10px; }
+
+    header {
+      background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--card-border); z-index: 50; position: absolute; top: 0; left: 0; right: 0; height: 60px;
+    }
+
+    .brand-group { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { 
+      width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), #1e40af); 
+      display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.95rem; color: #fff;
+      box-shadow: 0 0 14px var(--primary-glow);
+    }
+    .brand-title { font-size: 0.95rem; font-weight: 800; letter-spacing: -0.3px; color: #fff; }
+    .brand-sub { font-size: 0.65rem; color: var(--ai-purple); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .user-badge {
+      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border);
+      padding: 5px 10px; border-radius: 20px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .user-badge:hover { background: rgba(255, 255, 255, 0.12); }
+    .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, var(--ai-purple), #4c1d95); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; }
+    .user-name { font-size: 0.78rem; font-weight: 700; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+
+    .hdr-actions { display: flex; align-items: center; gap: 6px; }
+    .hdr-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff;
+      width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    }
+    .hdr-btn:hover { background: rgba(255,255,255,0.12); }
+    .hdr-btn.admin-btn { background: rgba(245, 158, 11, 0.15); border-color: var(--amber); color: var(--amber); }
+
+    @keyframes supportGlowAnim {
+      0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); color: #f43f5e; }
+      50% { box-shadow: 0 0 16px 6px rgba(244, 63, 94, 0.9); color: #fda4af; background: rgba(244, 63, 94, 0.25); }
+      100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.8); color: #f43f5e; }
+    }
+    .support-pulse {
+      animation: supportGlowAnim 1.2s infinite !important;
+      border-color: var(--rose) !important;
+    }
+
+    @keyframes adminGlowAnim {
+      0% { text-shadow: 0 0 5px #f59e0b, 0 0 10px #f59e0b, 0 0 15px #eab308; color: #fef08a; }
+      50% { text-shadow: 0 0 12px #fbbf24, 0 0 22px #f59e0b, 0 0 32px #d97706, 0 0 42px #b45309; color: #ffffff; }
+      100% { text-shadow: 0 0 5px #f59e0b, 0 0 10px #f59e0b, 0 0 15px #eab308; color: #fef08a; }
+    }
+    .admin-glow-text {
+      font-weight: 900;
+      animation: adminGlowAnim 1.8s infinite alternate;
+      color: #fbbf24;
+      letter-spacing: 0.5px;
+    }
+    .player-name-text { font-weight: 800; color: #38bdf8; }
+
+    .support-layout {
+      display: flex; background: rgba(3, 7, 18, 0.75);
+      border: 1px solid var(--card-border); border-radius: 16px;
+      height: 380px; overflow: hidden; margin-top: 10px;
+    }
+    .support-sidebar {
+      width: 140px; border-right: 1px solid var(--card-border);
+      display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.6); flex-shrink: 0;
+    }
+    .support-sidebar-header {
+      padding: 8px; font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border); text-transform: uppercase; text-align: center;
+    }
+    .support-topic-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .support-topic-item {
+      padding: 10px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; gap: 4px;
+    }
+    .support-topic-item:hover, .support-topic-item.active { background: rgba(37, 99, 235, 0.25); }
+    .support-topic-title { font-size: 0.78rem; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .support-topic-status { font-size: 0.62rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; align-self: flex-start; text-transform: uppercase; }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-accepted { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .status-closed { background: rgba(244, 63, 94, 0.2); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.4); }
+
+    .support-main-chat { flex: 1; display: flex; flex-direction: column; background: rgba(3, 7, 18, 0.5); overflow: hidden; }
+    .support-chat-header { padding: 10px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.8); }
+    .support-messages-box { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .support-input-area { padding: 8px; border-top: 1px solid var(--card-border); background: rgba(15, 23, 42, 0.9); display: flex; gap: 6px; }
+
+    .sup-msg-item { padding: 8px 12px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; max-width: 88%; word-break: break-word; }
+    .sup-msg-item.user { background: rgba(37, 99, 235, 0.25); border: 1px solid rgba(37, 99, 235, 0.4); align-self: flex-end; color: #fff; }
+    .sup-msg-item.admin { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); align-self: flex-start; color: #fff; }
+
+    .lgs-countdown-card {
+      background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(37, 99, 235, 0.4);
+      border-radius: 20px; padding: 20px 14px; text-align: center;
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.25); margin-bottom: 16px;
+    }
+    .lgs-title { font-size: 0.88rem; font-weight: 900; color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); text-transform: uppercase; letter-spacing: 0.8px; }
+    .neon-timer { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+    .timer-box { background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 12px; padding: 8px 10px; min-width: 65px; }
+    .timer-num { font-size: 1.4rem; font-weight: 900; color: #fff; text-shadow: 0 0 12px var(--primary); }
+    .timer-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-top: 2px; }
+
+    #drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.65); z-index: 150; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.3s; }
+    #drawer-overlay.active { opacity: 1; pointer-events: auto; }
+
+    #history-drawer {
+      position: absolute; top: 0; bottom: 0; left: -100%; width: 82%; max-width: 340px;
+      background: rgba(8, 12, 26, 0.96); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      z-index: 200; border-right: 1px solid var(--card-border);
+      transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; flex-direction: column; padding: 16px;
+    }
+    #history-drawer.active { left: 0; }
+
+    .drawer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .drawer-title { font-size: 1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+
+    .search-box {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 12px;
+      padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .search-box input { background: transparent; border: none; color: #fff; font-size: 0.82rem; width: 100%; outline: none; }
+
+    .new-chat-btn {
+      background: linear-gradient(135deg, var(--ai-purple), #6d28d9); color: #fff; border: none;
+      padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px;
+      box-shadow: 0 4px 15px var(--ai-glow); transition: transform 0.15s;
+    }
+    .new-chat-btn:active { transform: scale(0.97); }
+
+    .history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .history-item {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 12px;
+      display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
+    }
+    .history-item:hover, .history-item.active { background: rgba(139, 92, 246, 0.15); border-color: var(--ai-purple); }
+    .history-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .history-item-title { font-size: 0.82rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+    .history-item-date { font-size: 0.65rem; color: var(--text-muted); }
+    .delete-chat-btn { color: #f43f5e; opacity: 0.6; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; }
+    .delete-chat-btn:hover { opacity: 1; background: rgba(244,63,94,0.15); }
+
+    main { flex: 1; padding: 60px 0 65px 0; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+    .tab-section { display: none; height: 100%; width: 100%; flex-direction: column; overflow-y: auto; padding: 14px; }
+    .tab-section.active { display: flex; }
+
+    #sec-ai { padding: 10px 12px; flex: 1; overflow: hidden; flex-direction: column; }
+    #ai-chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; padding-bottom: 8px; }
+
+    .msg-group { display: flex; flex-direction: column; gap: 4px; max-width: 92%; }
+    .msg-group.user { align-self: flex-end; }
+    .msg-group.ai { align-self: flex-start; }
+
+    .user-msg {
+      background: linear-gradient(135deg, var(--primary), #1e3a8a); color: #fff;
+      border-radius: 18px 18px 4px 18px; padding: 12px 15px; font-size: 0.88rem; line-height: 1.5;
+      box-shadow: 0 4px 15px var(--primary-glow); word-break: break-word;
+    }
+
+    .ai-msg {
+      background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(139, 92, 246, 0.3); color: #f1f5f9;
+      border-radius: 18px 18px 18px 4px; padding: 14px 15px; font-size: 0.88rem; line-height: 1.55;
+      box-shadow: 0 4px 20px var(--ai-glow); backdrop-filter: blur(10px); word-break: break-word; position: relative;
+    }
+    .ai-msg-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; }
+    .ai-title { font-weight: 800; font-size: 0.78rem; color: var(--ai-purple); display: flex; align-items: center; gap: 6px; }
+
+    .msg-toolbar { display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end; }
+    .msg-tool-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--card-border); color: var(--text-muted); padding: 4px 8px; border-radius: 8px; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+    .msg-tool-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .msg-tool-btn.tts-active { background: rgba(16, 185, 129, 0.2); border-color: var(--emerald); color: var(--emerald); }
+
+    .quick-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0; }
+    .quick-chips::-webkit-scrollbar { display: none; }
+    .chip-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #e2e8f0;
+      padding: 6px 12px; border-radius: 20px; font-size: 0.74rem; font-weight: 600; white-space: nowrap;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+    }
+    .chip-btn:hover { background: rgba(139, 92, 246, 0.2); border-color: var(--ai-purple); color: #fff; }
+
+    .chat-input-wrapper {
+      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+      position: relative;
+    }
+
+    .input-row { display: flex; gap: 6px; align-items: center; }
+    .input-row input[type="text"] { flex: 1; background: transparent; border: none; color: #fff; font-size: 0.9rem; outline: none; padding: 8px 4px; }
+    .input-row input[type="text"]::placeholder { color: var(--text-muted); }
+
+    .attach-menu-wrapper { position: relative; display: inline-block; }
+    .attach-popover {
+      position: absolute; bottom: 48px; left: 0; background: rgba(15, 23, 42, 0.96);
+      border: 1px solid var(--card-border); border-radius: 16px; padding: 6px;
+      display: none; flex-direction: column; gap: 4px; backdrop-filter: blur(20px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 100; min-width: 160px;
+    }
+    .attach-popover.active { display: flex; }
+    .attach-opt-btn {
+      background: transparent; border: none; color: #fff; padding: 10px 12px;
+      border-radius: 12px; font-size: 0.8rem; font-weight: 700; text-align: left;
+      cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.2s;
+    }
+    .attach-opt-btn:hover { background: rgba(255,255,255,0.1); }
+
+    .send-btn {
+      background: linear-gradient(135deg, var(--ai-purple), #6d28d9); color: #fff; border: none;
+      padding: 8px 18px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer;
+      box-shadow: 0 4px 15px var(--ai-glow); transition: transform 0.15s; height: 38px; flex-shrink: 0;
+    }
+    .send-btn:active { transform: scale(0.96); }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 16px; margin-bottom: 14px; backdrop-filter: blur(12px); }
+    .card-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+
+    .news-card-wrapper { display: flex; flex-direction: column; gap: 14px; }
+    .news-card {
+      background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px; padding: 16px; position: relative; overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4); backdrop-filter: blur(10px); transition: transform 0.2s, border-color 0.2s;
+    }
+    .news-card:hover { border-color: rgba(37, 99, 235, 0.5); transform: translateY(-2px); }
+    .news-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .news-tag { font-size: 0.68rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; background: rgba(56, 189, 248, 0.12); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.25); }
+    .news-head { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 8px; line-height: 1.35; }
+    .news-img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 12px; margin: 10px 0; border: 1px solid var(--card-border); }
+    .news-body { font-size: 0.82rem; color: #cbd5e1; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .news-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .news-date { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+
+    .wa-banner { background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 95, 70, 0.3)); border: 1px solid var(--emerald); border-radius: 16px; padding: 14px; margin-bottom: 14px; text-align: center; }
+    .wa-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--emerald); color: #000; font-weight: 900; font-size: 0.82rem; padding: 10px 16px; border-radius: 12px; text-decoration: none; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+
+    .pomo-display { text-align: center; margin: 16px 0; }
+    .pomo-status { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; }
+    .pomo-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+    .pomo-btn { padding: 10px 20px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; }
+    .pomo-btn-start { background: var(--emerald); color: #000; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+    .pomo-btn-pause { background: var(--amber); color: #000; }
+    .pomo-btn-reset { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--card-border); }
+    .pomo-badge-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px; text-align: center; }
+
+    .admin-form-group { margin-bottom: 12px; text-align: left; }
+    .admin-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block; }
+    .admin-input, .admin-textarea { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.04); color: #fff; outline: none; font-size: 0.85rem; }
+    .admin-textarea { height: 80px; resize: none; }
+    .admin-btn-action { width: 100%; background: linear-gradient(135deg, var(--amber), #b45309); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); margin-top: 4px; }
+
+    nav {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+      background: rgba(3, 7, 18, 0.94); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border-top: 1px solid var(--card-border); display: flex; padding: 4px 4px; z-index: 100;
+    }
+
+    .nav-btn {
+      background: transparent; border: none; color: var(--text-muted); padding: 4px 2px; border-radius: 12px;
+      font-size: 0.65rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; flex: 1; cursor: pointer; transition: all 0.2s; position: relative;
+    }
+    .nav-btn.active { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-btn.active .nav-icon { transform: translateY(-1px); color: var(--primary); }
+    .nav-icon { font-size: 1.1rem; transition: transform 0.2s; }
+    nav { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+    nav::-webkit-scrollbar { display:none; }
+    .nav-btn { flex: 0 0 82px; min-width:82px; white-space:nowrap; padding-left:4px; padding-right:4px; }
+    .nav-btn > span:last-child { display:block; font-size:0.66rem; line-height:1.05; overflow:visible; }
+    .ai-msg-content { overflow-wrap:anywhere; }
+    .ai-msg-content table { display:block; overflow-x:auto; }
+    .streaming-cursor::after { content:'▌'; animation: blinkCursor .8s steps(1) infinite; margin-left:2px; color:var(--ai-purple); }
+    @keyframes blinkCursor { 50% { opacity:0; } }
+    .attachment-status { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .attachment-chip { font-size:.72rem; padding:4px 8px; border-radius:999px; background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.35); color:#6ee7b7; }
+    .ai-processing { opacity:.75; pointer-events:none; }
+    .ai-error { color:#fda4af; }
+
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 300; display: flex;
+      align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(15px);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal.active { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: var(--bg-dark); border: 1px solid var(--card-border); border-radius: 24px; padding: 22px;
+      width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+      transform: scale(0.95); transition: transform 0.25s;
+    }
+    .modal.active .modal-card { transform: scale(1); }
+
+    .modal-title { font-size: 1.1rem; font-weight: 900; color: #fff; margin-bottom: 12px; }
+    .modal-input { width: 100%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.04); color: #fff; margin-bottom: 10px; outline: none; font-size: 0.85rem; }
+    .modal-input:focus { border-color: var(--ai-purple); }
+
+    .modal-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.88rem; margin-top: 4px; box-shadow: 0 4px 15px var(--primary-glow); }
+    .modal-btn.sec { background: transparent; border: 1px solid var(--card-border); box-shadow: none; margin-top: 8px; }
+
+    #crop-modal-card { max-width: 450px; width: 95%; }
+    .crop-container { width: 100%; max-height: 320px; overflow: hidden; margin: 12px 0; background: #000; border-radius: 12px; }
+    #crop-image { max-width: 100%; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div id="app-container">
+  <header>
+    <div class="brand-group">
+      <div class="brand-logo">IP</div>
+      <div>
+        <div class="brand-title">İMAN POWER</div>
+        <div class="brand-sub">AI EĞİTİM & DERS PORTAL</div>
+      </div>
+    </div>
+
+    <div class="hdr-actions">
+      <button class="hdr-btn admin-btn" title="Admin Paneli Girişi" onclick="openAdminModal()">👑</button>
+      <div class="user-badge" onclick="openProfileModal()">
+        <div class="user-avatar" id="hdr-avatar">Ö</div>
+        <div class="user-name" id="hdr-username">Öğrenci</div>
+      </div>
+      <button class="hdr-btn" title="Sohbet Geçmişi" onclick="toggleDrawer(true)">📜</button>
+      <button class="hdr-btn" title="Yeni Ders Sohbeti" onclick="createNewChat()">➕</button>
+    </div>
+  </header>
+
+  <div id="drawer-overlay" onclick="toggleDrawer(false)"></div>
+  <div id="history-drawer">
+    <div class="drawer-top">
+      <div class="drawer-title"><span>📜</span> Sohbet Geçmişi</div>
+      <button class="hdr-btn" onclick="toggleDrawer(false)">✕</button>
+    </div>
+
+    <button class="new-chat-btn" onclick="createNewChat()">
+      <span>➕</span> Yeni Ders / Sohbet Başlat
+    </button>
+
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="chat-search-input" placeholder="Konularda ara..." oninput="filterChatHistory()">
+    </div>
+
+    <div id="history-list-container" class="history-list"></div>
+  </div>
+
+  <main>
+    <section id="sec-ai" class="tab-section active">
+      <div id="ai-chat-box"></div>
+
+      <div class="quick-chips">
+        <button class="chip-btn" onclick="sendQuickPrompt('📐 LGS/YKS Matematik mantık-muhakeme sorusu çözümü için taktik ver.')">📐 Matematik Taktikleri</button>
+        <button class="chip-btn" onclick="sendQuickPrompt('🔬 Fen Bilimleri dersi için verimli çalışma planı öner.')">🔬 Fen Çalışma Rehberi</button>
+        <button class="chip-btn" onclick="sendQuickPrompt('📝 Paragraf sorularını daha hızlı çözmek için neler yapmalıyım?')">📝 Paragraf Çözüm Taktiği</button>
+        <button class="chip-btn" onclick="sendQuickPrompt('📅 LGS / YKS haftalık ders çalışma programı hazırla.')">📅 Ders Çalışma Programı</button>
+        <button class="chip-btn" onclick="sendQuickPrompt('İman Power FC takımı hakkında bilgi verir misin?')">⚽ İman Power FC Bilgisi</button>
+      </div>
+
+      <div class="chat-input-wrapper">
+        <div id="image-preview-badge" class="attachment-status" style="display:none;"></div>
+        <div class="input-row">
+          <input type="file" id="ai-image-input" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
+          <input type="file" id="ai-pdf-input" accept=".pdf,application/pdf" style="display:none;" onchange="handleFileSelect(this)">
+
+          <div class="attach-menu-wrapper">
+            <button type="button" onclick="toggleAttachmentMenu(event)" class="hdr-btn" style="height:38px; width:38px; flex-shrink:0;" title="Ekle (Görsel / PDF)">➕</button>
+            <div id="attachment-popover" class="attach-popover">
+              <button type="button" class="attach-opt-btn" onclick="triggerFileInput('ai-image-input')">📷 Fotoğraf / Kamera</button>
+              <button type="button" class="attach-opt-btn" onclick="triggerFileInput('ai-pdf-input')">📄 PDF Belgesi</button>
+            </div>
+          </div>
+
+          <button type="button" id="mic-btn" onclick="toggleSpeechToText()" class="hdr-btn" style="height:38px; width:38px; flex-shrink:0;" title="Sesle Soru Sor">🎙️</button>
+          <input type="text" id="ai-input" placeholder="Soru sorun, PDF/fotoğraf ekleyin veya sesle konuşun..." onkeypress="if(event.key==='Enter') askAI()">
+          <button class="send-btn" onclick="askAI()">Gönder</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESTEK SİSTEMİ SEKSİYONU -->
+    <section id="sec-support" class="tab-section">
+      <div class="card" style="border-color: rgba(244, 63, 94, 0.4); margin-bottom:10px;">
+        <div class="card-title" style="color:var(--rose);">🎧 CANLI DESTEK MERKEZİ</div>
+        <p style="font-size:0.78rem; color:var(--text-muted); line-height:1.5; margin-bottom:10px;">
+          Yönetici ile doğrudan iletişim kurabilirsiniz. Destek talebiniz yönetici tarafından kabul edildikten sonra canlı sohbet aktif olur.
+        </p>
+        <button class="admin-btn-action" style="background:linear-gradient(135deg, var(--rose), #be123c); font-size:0.82rem;" onclick="openNewSupportModal()">➕ Yeni Destek Talebi Aç</button>
+      </div>
+
+      <div class="support-layout">
+        <div class="support-sidebar">
+          <div class="support-sidebar-header">Konular</div>
+          <div id="user-support-topic-list" class="support-topic-list"></div>
+        </div>
+        <div class="support-main-chat" id="user-support-chat-pane">
+          <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:0.78rem; color:var(--text-muted); padding:10px; text-align:center;">
+            Soldaki listeden bir destek konusu seçiniz.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-lgs" class="tab-section">
+      <div class="lgs-countdown-card">
+        <div class="lgs-title">🎯 HEDEF SINAV GERİ SAYIMI 🎯</div>
+        <div class="neon-timer">
+          <div class="timer-box"><div class="timer-num" id="lgs-days">00</div><div class="timer-label">GÜN</div></div>
+          <div class="timer-box"><div class="timer-num" id="lgs-hours">00</div><div class="timer-label">SAAT</div></div>
+          <div class="timer-box"><div class="timer-num" id="lgs-mins">00</div><div class="timer-label">DK</div></div>
+          <div class="timer-box"><div class="timer-num" id="lgs-secs">00</div><div class="timer-label">SN</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: rgba(37, 99, 235, 0.3);">
+        <div class="card-title" style="color:var(--primary);">🎯 AKILLI SINAV HAZIRLIK REHBERİ</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin-bottom:10px;">
+          Düzenli soru çözümü, yanlış analizleri ve zaman yönetimi hedefinize ulaşmanın temel unsurlarıdır.
+        </p>
+        <ul style="font-size:0.8rem; color:#fff; line-height:1.8; padding-left:18px;">
+          <li>Her gün en az 1 Pomodoro oturumunu yeni nesil soru çözümüne ayır.</li>
+          <li>Çözemediğin soruların resmini çekip AI Asistanı'na sor.</li>
+          <li>Haftalık deneme sınavı analizlerini düzenli olarak not et.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-pomo" class="tab-section">
+      <div class="card">
+        <div class="card-title" style="color:var(--emerald);">⏱️ ODAKLANMA VE DERS SAYACI</div>
+        
+        <div style="display:flex; gap:8px; justify-content:center; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+          <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Süre (Dk):</label>
+          <input type="number" id="pomo-custom-mins" value="25" min="1" max="180" style="width:70px; padding:6px 10px; border-radius:10px; border:1px solid var(--card-border); background:rgba(255,255,255,0.05); color:#fff; text-align:center; font-weight:800;" oninput="setCustomPomodoroTime()" onchange="setCustomPomodoroTime()">
+          <button onclick="setQuickPomoTime(15)" class="chip-btn" style="padding:4px 8px; font-size:0.75rem;">15 dk</button>
+          <button onclick="setQuickPomoTime(25)" class="chip-btn" style="padding:4px 8px; font-size:0.75rem;">25 dk</button>
+          <button onclick="setQuickPomoTime(45)" class="chip-btn" style="padding:4px 8px; font-size:0.75rem;">45 dk</button>
+          <button onclick="setQuickPomoTime(60)" class="chip-btn" style="padding:4px 8px; font-size:0.75rem;">60 dk</button>
+        </div>
+
+        <div class="pomo-display">
+          <div class="pomo-status" id="pomo-mode-text">📚 ODAKLANMA ZAMANI (DERS)</div>
+          <div class="pomo-timer-display" id="pomo-timer-display" style="font-size:3.2rem; font-weight:900; color:var(--emerald);">25:00</div>
+        </div>
+
+        <div class="pomo-controls">
+          <button class="pomo-btn pomo-btn-start" onclick="startPomodoro()">Başlat ▶</button>
+          <button class="pomo-btn pomo-btn-pause" onclick="pausePomodoro()">Duraklat ⏸</button>
+          <button class="pomo-btn pomo-btn-reset" onclick="resetPomodoro()">Sıfırla 🔄</button>
+        </div>
+
+        <div class="pomo-badge-box" style="display:flex; justify-content:space-around; align-items:center; gap:10px;">
+          <div>
+            <span style="font-size:0.78rem; color:var(--text-muted); display:block;">Tamamlanan Oturum</span>
+            <span id="pomo-count-today" style="font-size:1.2rem; font-weight:900; color:var(--emerald);">0</span> 🍅
+          </div>
+          <div style="width:1px; height:30px; background:var(--card-border);"></div>
+          <div>
+            <span style="font-size:0.78rem; color:var(--text-muted); display:block;">Toplam Çalışma Süresi</span>
+            <span id="pomo-minutes-today" style="font-size:1.2rem; font-weight:900; color:#38bdf8;">0</span> <span style="font-size:0.8rem; font-weight:700; color:#38bdf8;">Dk</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-news" class="tab-section">
+      <div style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1rem; font-weight:900; color:#fff;">📢 DUYURU VE BİLGİLENDİRMELER</h3>
+        <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Güncel Haberler</span>
+      </div>
+      <div id="news-list-container" class="news-card-wrapper"></div>
+    </section>
+
+    <section id="sec-about" class="tab-section">
+      <div class="wa-banner">
+        <div style="font-size:0.95rem; font-weight:900; color:#fff;">📱 İMAN POWER ANA UYGULAMA</div>
+        <p style="font-size:0.78rem; color:#e2e8f0; margin-top:6px; line-height:1.4;">
+          Uygulama ve platform güncellemeleri için WhatsApp hattımız üzerinden iletişime geçebilirsiniz.
+        </p>
+        <a href="https://wa.me/" target="_blank" class="wa-btn">💬 WhatsApp İletişim Line</a>
+      </div>
+
+      <div class="card" style="border-color: rgba(139, 92, 246, 0.4);">
+        <div class="card-title" style="color: var(--ai-purple);">⚡ HAKKIMIZDA</div>
+        <p style="font-size:0.85rem; color: var(--text-muted); line-height:1.6; margin-bottom:12px;">
+          <strong>İman Power Portal</strong>, Kurucumuz <strong>Berat Cihad Yeten</strong> liderliğinde öğrencilerin ders başarısını artırmak ve eğitim süreçlerini yapay zeka ile kolaylaştırmak amacıyla tasarlanmıştır.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚽ İMAN POWER FC (SPOR KULÜBÜ)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin-bottom:10px;">
+          İman Power FC, 2013 doğumlu sporculardan oluşan, disiplin, dostluk ve gelişim odaklı bir futbol takımıdır.
+        </p>
+        <div style="font-size:0.78rem; color:#fff; line-height:1.8;">
+          <strong>👑 Kurucu:</strong> Berat Cihad Yeten<br>
+          <strong>📋 Yönetim:</strong> Reşit Öztoprak, Mustafa Aslan
+        </div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.1rem; font-weight:900; color:#fff; margin-bottom:4px;">İman Power v11.0 AI</div>
+        <div style="font-size:0.75rem; color:var(--emerald);">Mistral Multimodal • Canlı Sohbet • Görsel/PDF AI</div>
+      </div>
+    </section>
+
+    <section id="sec-admin" class="tab-section">
+      <div class="card" style="border-color:var(--amber);">
+        <div class="card-title" style="color:var(--amber);">👑 YÖNETİCİ & ADMIN PANELİ</div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:14px;">Portal İçeriği, Sınav Tarihi ve Oyuncu Destek Yönetimi</p>
+
+        <div style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px; margin-bottom:14px;">
+          <h4 style="color:var(--rose); font-size:0.88rem; margin-bottom:10px; display:flex; justify-content:space-between;">
+            <span>🎧 Oyuncu Destek Sohbetleri</span>
+          </h4>
+          
+          <div class="support-layout">
+            <div class="support-sidebar">
+              <div class="support-sidebar-header">Talepler</div>
+              <div id="admin-support-topic-list" class="support-topic-list"></div>
+            </div>
+            <div class="support-main-chat" id="admin-support-chat-pane">
+              <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:0.78rem; color:var(--text-muted); padding:10px; text-align:center;">
+                Soldaki listeden incelemek veya yanıtlamak istediğiniz talebi seçiniz.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px; margin-bottom:14px;">
+          <h4 style="color:#fff; font-size:0.85rem; margin-bottom:8px;">🎯 Hedef Sınav Tarihini Değiştir</h4>
+          <div class="admin-form-group">
+            <label class="admin-label">Hedef Tarih ve Saat</label>
+            <input type="datetime-local" id="admin-lgs-date" class="admin-input">
+          </div>
+          <button class="admin-btn-action" style="background:linear-gradient(135deg, var(--primary), #1e40af);" onclick="saveAdminLgsDate()">⏱️ Sayaç Tarihini Güncelle</button>
+        </div>
+
+        <div style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px; margin-bottom:14px;">
+          <h4 style="color:#fff; font-size:0.85rem; margin-bottom:8px;">📢 Yeni Duyuru / Bilgilendirme Ekle</h4>
+          
+          <div class="admin-form-group">
+            <label class="admin-label">Başlık</label>
+            <input type="text" id="admin-news-title" class="admin-input" placeholder="Örn: Deneme Sınavı Takvimi Açıklandı">
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-label">Kategori</label>
+            <input type="text" id="admin-news-tag" class="admin-input" placeholder="Örn: 📚 DERS BİLGİSİ">
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-label">Görsel Dosyası (Opsiyonel)</label>
+            <input type="file" id="admin-news-image-file" class="admin-input" accept="image/*">
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-label">Açıklama Detayı</label>
+            <textarea id="admin-news-body" class="admin-textarea" placeholder="Duyuru içeriği..."></textarea>
+          </div>
+
+          <button class="admin-btn-action" onclick="publishAdminNews()">🚀 Yayınla</button>
+        </div>
+
+        <div>
+          <h4 style="color:#fff; font-size:0.85rem; margin-bottom:8px;">🗑️ Kayıtlı Duyuruları Yönet</h4>
+          <div id="admin-news-list" style="display:flex; flex-direction:column; gap:8px; max-height:250px; overflow-y:auto; padding-right:4px;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('ai', this)">
+      <span class="nav-icon">🤖</span>
+      <span>AI Asistan</span>
+    </button>
+    <button class="nav-btn" id="nav-support-btn" onclick="switchTab('support', this)">
+      <span class="nav-icon">🎧</span>
+      <span>Canlı Destek</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('lgs', this)">
+      <span class="nav-icon">🎯</span>
+      <span>Sınav Sayacı</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('pomo', this)">
+      <span class="nav-icon">⏱️</span>
+      <span>Pomodoro</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('news', this)">
+      <span class="nav-icon">📢</span>
+      <span>Duyurular</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('about', this)">
+      <span class="nav-icon">ℹ️</span>
+      <span>Hakkımızda</span>
+    </button>
+  </nav>
+
+  <!-- YENİ DESTEK TALEBİ MODALI -->
+  <div id="new-support-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-title" style="color:var(--rose);">🎧 YENİ DESTEK TALEBİ</div>
+      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">Destek amacınızı ve sorununuzu detaylıca yazınız.</p>
+      
+      <input type="text" id="sup-subject" placeholder="Destek Konusu (Örn: Hesap Sorunu)" class="modal-input">
+      <textarea id="sup-intent" placeholder="Destek Niyeti ve Detaylı Açıklamanız..." class="modal-input" style="height:90px; resize:none;"></textarea>
+      
+      <button class="modal-btn" style="background:var(--rose);" onclick="createNewSupportTicket()">Talebi Gönder 🚀</button>
+      <button class="modal-btn sec" onclick="closeNewSupportModal()">İptal</button>
+    </div>
+  </div>
+
+  <div id="crop-modal" class="modal">
+    <div class="modal-card" id="crop-modal-card">
+      <div class="modal-title" style="color:var(--emerald);">✂️ Soruyu Kırpın</div>
+      <p style="font-size:0.75rem; color:var(--text-muted);">Görseldeki soru alanını seçin. Yazıları ve şekilleri mümkün olduğunca tam bırakın.</p>
+      <div class="crop-container">
+        <img id="crop-image" src="" alt="Kırpılacak Görsel">
+      </div>
+      <button class="modal-btn" style="background:var(--emerald); color:#000;" onclick="applyCrop()">✂️ Kırp ve AI'ya Hazırla</button>
+      <button class="modal-btn sec" onclick="cancelCrop()">İptal</button>
+    </div>
+  </div>
+
+  <div id="admin-auth-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-title" style="color:var(--amber);">🔒 YÖNETİCİ GİRİŞİ</div>
+      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:14px;">Güvenlik Parolasını Giriniz</p>
+      
+      <input type="password" id="admin-pass-input" placeholder="Admin Şifresi" class="modal-input">
+      
+      <button class="modal-btn" style="background:var(--amber);" onclick="verifyAdminPassword()">Giriş Yap</button>
+      <button class="modal-btn sec" onclick="closeAdminModal()">İptal</button>
+    </div>
+  </div>
+
+  <div id="auth-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-title" style="color:var(--primary);">İMAN POWER PORTAL</div>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:14px;">Ders Portalı Giriş Ekranı</p>
+      
+      <input type="text" id="auth-name" placeholder="Adınız Soyadınız" class="modal-input">
+      <input type="email" id="auth-email" placeholder="E-posta Adresiniz" class="modal-input">
+      <input type="password" id="auth-pass" placeholder="Şifreniz" class="modal-input">
+      
+      <button class="modal-btn" onclick="handleAuth('login')">Giriş Yap</button>
+      <button class="modal-btn sec" onclick="handleAuth('register')">Yeni Öğrenci Kaydı</button>
+    </div>
+  </div>
+
+  <div id="profile-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-title">👤 Öğrenci Profili</div>
+      <div style="margin-bottom:14px;">
+        <input type="text" id="edit-display-name" class="modal-input" placeholder="Adınız Soyadınız">
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+        Bugün Tamamlanan Çalışma: <strong id="profile-pomo-count" style="color:var(--emerald);">0</strong> 🍅
+      </div>
+      <button class="modal-btn" onclick="saveProfileName()">İsmi Güncelle</button>
+      <button class="modal-btn sec" style="color:#f43f5e; border-color:rgba(244,63,94,0.3);" onclick="logoutUser()">Oturumu Kapat</button>
+      <button class="modal-btn sec" onclick="closeProfileModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQsz76a4QtcwCT_GoBCq4SYa4Mi08tazE",
+    authDomain: "sinifpro-f1f07.firebaseapp.com",
+    projectId: "sinifpro-f1f07",
+    storageBucket: "sinifpro-f1f07.firebasestorage.app",
+    messagingSenderId: "934477509041",
+    appId: "1:934477509041:web:29b8370b7c9f1618100d90",
+    databaseURL: "https://sinifpro-f1f07-default-rtdb.firebaseio.com"
+  };
+
+  // GÜVENLİK: Mistral API anahtarını HTML içine gerçek haliyle koymayın.
+// En güvenlisi /api/mistral proxy kullanmaktır. İsterseniz geçici test için
+// aşağıdaki alana kendi YENİ anahtarınızı girebilirsiniz; yayınlamadan önce kaldırın.
+  const MISTRAL_API_KEY = localStorage.getItem('iman_power_mistral_key') || "";
+  const MISTRAL_PROXY_URL = "/api/mistral";
+  const MISTRAL_MODEL = "mistral-medium-latest";
+  const ADMIN_SECRET_PASSWORD = ""; // Admin parolasını sunucu tarafında doğrulamanız önerilir.
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  let currentUser = null;
+  let activeChatId = null;
+  let allUserChats = {};
+  let userSupportTickets = {};
+  let allSupportTickets = {};
+  let activeUserTicketId = null;
+  let activeAdminTicketId = null;
+  let isAdminAuthenticated = false;
+
+  // AI çalışma durumu: aynı sorunun iki kez gönderilmesini ve çakışan akışları engeller.
+  let isAIProcessing = false;
+  let activeAIAbortController = null;
+  let pendingPdfImages = [];
+  let pendingPdfText = '';
+  let pendingAttachmentName = '';
+
+  let pomoWorkMinutes = 25;
+  let pomoSecondsLeft = 25 * 60;
+  let pomoTimer = null;
+  let isPomoRunning = false;
+  let isPomoBreak = false;
+  let pomoCountToday = 0;
+  let pomoMinutesToday = 0;
+  let lastRecordedElapsedMin = 0;
+
+  let cropper = null;
+  let pendingCroppedImageBase64 = null;
+  let lgsTargetTimestamp = new Date("2027-06-06T09:30:00").getTime();
+
+  let recognition = null;
+  let isRecording = false;
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const targetSec = document.getElementById(`sec-${tabId}`);
+    if (targetSec) targetSec.classList.add('active');
+    
+    if (btn) btn.classList.add('active');
+
+    if (tabId === 'support' && currentUser) {
+      listenUserSupportTickets();
+    }
+  }
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('auth-modal').classList.remove('active');
+      const displayName = user.displayName || user.email.split('@')[0];
+      updateUserHeaderUI(displayName);
+      loadUserChatsList();
+      listenLiveNews();
+      listenLgsDate();
+      loadPomodoroStats();
+      restorePomodoroState();
+      listenUserSupportTickets();
+    } else {
+      currentUser = null;
+      document.getElementById('auth-modal').classList.add('active');
+    }
+  });
+
+  function listenLgsDate() {
+    db.ref('config/lgsTargetDate').on('value', (snapshot) => {
+      const val = snapshot.val();
+      if (val) lgsTargetTimestamp = new Date(val).getTime();
+      updateLGSCountdown();
+    });
+  }
+
+  function updateLGSCountdown() {
+    const now = new Date().getTime();
+    const diff = lgsTargetTimestamp - now;
+
+    if (diff <= 0) {
+      document.getElementById("lgs-days").innerText = "00";
+      document.getElementById("lgs-hours").innerText = "00";
+      document.getElementById("lgs-mins").innerText = "00";
+      document.getElementById("lgs-secs").innerText = "00";
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById("lgs-days").innerText = String(days).padStart(2, '0');
+    document.getElementById("lgs-hours").innerText = String(hours).padStart(2, '0');
+    document.getElementById("lgs-mins").innerText = String(mins).padStart(2, '0');
+    document.getElementById("lgs-secs").innerText = String(secs).padStart(2, '0');
+  }
+  setInterval(updateLGSCountdown, 1000);
+
+  function setCustomPomodoroTime() {
+    if (isPomoRunning) return;
+    const inputEl = document.getElementById("pomo-custom-mins");
+    let mins = parseInt(inputEl.value);
+    if (isNaN(mins) || mins < 1) mins = 1;
+    if (mins > 180) mins = 180;
+    pomoWorkMinutes = mins;
+    if (!isPomoBreak) {
+      pomoSecondsLeft = pomoWorkMinutes * 60;
+      updatePomoDisplay();
+    }
+  }
+
+  function setQuickPomoTime(mins) {
+    if (isPomoRunning) return;
+    document.getElementById("pomo-custom-mins").value = mins;
+    setCustomPomodoroTime();
+  }
+
+  function updatePomoDisplay() {
+    const m = Math.floor(pomoSecondsLeft / 60);
+    const s = pomoSecondsLeft % 60;
+    document.getElementById("pomo-timer-display").innerText = 
+      `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function startPomodoro() {
+    if (isPomoRunning) return;
+
+    const now = Date.now();
+    let endTime = localStorage.getItem('pomo_endTime');
+
+    if (!endTime || pomoSecondsLeft <= 0) {
+      endTime = now + pomoSecondsLeft * 1000;
+      localStorage.setItem('pomo_endTime', endTime);
+      localStorage.setItem('pomo_totalSecs', pomoWorkMinutes * 60);
+      localStorage.setItem('pomo_isBreak', isPomoBreak ? '1' : '0');
+      lastRecordedElapsedMin = 0;
+    }
+
+    isPomoRunning = true;
+    localStorage.setItem('pomo_isRunning', '1');
+    runTimerLoop();
+  }
+
+  function runTimerLoop() {
+    clearInterval(pomoTimer);
+    pomoTimer = setInterval(() => {
+      const endTime = parseInt(localStorage.getItem('pomo_endTime') || '0');
+      const totalSecs = parseInt(localStorage.getItem('pomo_totalSecs') || (pomoWorkMinutes * 60));
+      const now = Date.now();
+      const diffSecs = Math.round((endTime - now) / 1000);
+
+      if (diffSecs <= 0) {
+        pomoSecondsLeft = 0;
+        updatePomoDisplay();
+        clearInterval(pomoTimer);
+        isPomoRunning = false;
+        localStorage.removeItem('pomo_isRunning');
+        localStorage.removeItem('pomo_endTime');
+
+        if (!isPomoBreak) {
+          alert(`🎉 Tebrikler! ${pomoWorkMinutes} dakikalık odaklanma oturumunu tamamladınız. 5 dakika mola zamanı.`);
+          incrementPomodoroCount(pomoWorkMinutes - lastRecordedElapsedMin, true);
+          isPomoBreak = true;
+          pomoSecondsLeft = 5 * 60;
+          document.getElementById("pomo-mode-text").innerText = "☕ MOLA ZAMANI (5 DK)";
+        } else {
+          alert("🔔 Mola süresi bitti. Yeni ders oturumu için hazır mısınız?");
+          isPomoBreak = false;
+          pomoSecondsLeft = pomoWorkMinutes * 60;
+          document.getElementById("pomo-mode-text").innerText = "📚 ODAKLANMA ZAMANI (DERS)";
+        }
+        updatePomoDisplay();
+        return;
+      }
+
+      pomoSecondsLeft = diffSecs;
+      updatePomoDisplay();
+
+      if (!isPomoBreak) {
+        const elapsedSecs = totalSecs - diffSecs;
+        const currentElapsedMin = Math.floor(elapsedSecs / 60);
+        if (currentElapsedMin > lastRecordedElapsedMin) {
+          const addedMins = currentElapsedMin - lastRecordedElapsedMin;
+          lastRecordedElapsedMin = currentElapsedMin;
+          incrementPomodoroCount(addedMins, false);
+        }
+      }
+    }, 1000);
+  }
+
+  function restorePomodoroState() {
+    const isRunning = localStorage.getItem('pomo_isRunning') === '1';
+    const endTime = parseInt(localStorage.getItem('pomo_endTime') || '0');
+    isPomoBreak = localStorage.getItem('pomo_isBreak') === '1';
+
+    if (isRunning && endTime) {
+      const now = Date.now();
+      const diffSecs = Math.round((endTime - now) / 1000);
+      if (diffSecs > 0) {
+        pomoSecondsLeft = diffSecs;
+        if (isPomoBreak) {
+          document.getElementById("pomo-mode-text").innerText = "☕ MOLA ZAMANI (5 DK)";
+        }
+        startPomodoro();
+      } else {
+        localStorage.removeItem('pomo_isRunning');
+        localStorage.removeItem('pomo_endTime');
+      }
+    }
+  }
+
+  function pausePomodoro() {
+    clearInterval(pomoTimer);
+    isPomoRunning = false;
+    localStorage.removeItem('pomo_isRunning');
+  }
+
+  function resetPomodoro() {
+    clearInterval(pomoTimer);
+    isPomoRunning = false;
+    isPomoBreak = false;
+    localStorage.removeItem('pomo_isRunning');
+    localStorage.removeItem('pomo_endTime');
+    lastRecordedElapsedMin = 0;
+    pomoSecondsLeft = pomoWorkMinutes * 60;
+    document.getElementById("pomo-mode-text").innerText = "📚 ODAKLANMA ZAMANI (DERS)";
+    updatePomoDisplay();
+  }
+
+  function getTodayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}`;
+  }
+
+  async function loadPomodoroStats() {
+    if (!currentUser) return;
+    const todayKey = getTodayKey();
+    db.ref(`users/${currentUser.uid}/pomodoros/${todayKey}`).on('value', (snap) => {
+      const val = snap.val();
+      if (typeof val === 'object' && val !== null) {
+        pomoCountToday = val.count || 0;
+        pomoMinutesToday = val.minutes || 0;
+      } else if (typeof val === 'number') {
+        pomoCountToday = val;
+        pomoMinutesToday = val * 25;
+      } else {
+        pomoCountToday = 0;
+        pomoMinutesToday = 0;
+      }
+      document.getElementById('pomo-count-today').innerText = pomoCountToday;
+      document.getElementById('pomo-minutes-today').innerText = pomoMinutesToday;
+      if (document.getElementById('profile-pomo-count')) {
+        document.getElementById('profile-pomo-count').innerText = pomoCountToday;
+      }
+    });
+  }
+
+  async function incrementPomodoroCount(workedMins, isFullSession) {
+    if (!currentUser || workedMins <= 0) return;
+    const todayKey = getTodayKey();
+    const newCount = pomoCountToday + (isFullSession ? 1 : 0);
+    const newMins = pomoMinutesToday + workedMins;
+    await db.ref(`users/${currentUser.uid}/pomodoros/${todayKey}`).set({
+      count: newCount,
+      minutes: newMins
+    });
+  }
+
+  function updateUserHeaderUI(name) {
+    document.getElementById('hdr-username').innerText = name;
+    document.getElementById('hdr-avatar').innerText = name.charAt(0).toUpperCase();
+    document.getElementById('edit-display-name').value = name;
+  }
+
+  async function handleAuth(type) {
+    const email = document.getElementById('auth-email').value.trim();
+    const pass = document.getElementById('auth-pass').value.trim();
+    const name = document.getElementById('auth-name').value.trim();
+
+    if (!email || !pass) return alert("Lütfen e-posta ve şifrenizi giriniz.");
+
+    try {
+      if (type === 'register') {
+        if (!name) return alert("Lütfen adınızı ve soyadınızı giriniz.");
+        const res = await auth.createUserWithEmailAndPassword(email, pass);
+        await res.user.updateProfile({ displayName: name });
+        updateUserHeaderUI(name);
+      } else {
+        await auth.signInWithEmailAndPassword(email, pass);
+      }
+    } catch (err) { alert("Hata: " + err.message); }
+  }
+
+  function openAdminModal() {
+    if (isAdminAuthenticated) {
+      switchTab('admin', document.querySelector('.hdr-btn.admin-btn'));
+    } else {
+      document.getElementById('admin-auth-modal').classList.add('active');
+    }
+  }
+
+  function closeAdminModal() {
+    document.getElementById('admin-auth-modal').classList.remove('active');
+  }
+
+  function verifyAdminPassword() {
+    const pass = document.getElementById('admin-pass-input').value.trim();
+    if (pass === ADMIN_SECRET_PASSWORD) {
+      isAdminAuthenticated = true;
+      closeAdminModal();
+      document.getElementById('admin-pass-input').value = '';
+      listenAdminSupportTickets();
+      switchTab('admin', document.querySelector('.hdr-btn.admin-btn'));
+      alert("✅ Yönetici girişi başarılı.");
+    } else {
+      alert("❌ Hatalı yönetici parolası.");
+    }
+  }
+
+  async function saveAdminLgsDate() {
+    const dateVal = document.getElementById('admin-lgs-date').value;
+    if (!dateVal) return alert("Lütfen geçerli bir tarih seçiniz.");
+
+    await db.ref('config/lgsTargetDate').set(dateVal);
+    alert("🎉 Sınav tarihi güncellendi.");
+  }
+
+  async function publishAdminNews() {
+    const title = document.getElementById('admin-news-title').value.trim();
+    const tag = document.getElementById('admin-news-tag').value.trim() || '📢 DUYURU';
+    const body = document.getElementById('admin-news-body').value.trim();
+    const fileInput = document.getElementById('admin-news-image-file');
+
+    if (!title || !body) return alert("Lütfen başlık ve içerik alanlarını doldurunuz.");
+
+    let imageDataUrl = "";
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      if (file.size > 3 * 1024 * 1024) return alert("Görsel boyutu 3MB'dan küçük olmalıdır.");
+      try {
+        imageDataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.onerror = e => reject(e);
+          reader.readAsDataURL(file);
+        });
+      } catch(e) {}
+    }
+
+    const newNewsRef = db.ref('news').push();
+    await newNewsRef.set({
+      title: title, tag: tag, body: body, image: imageDataUrl || "", timestamp: Date.now()
+    });
+
+    document.getElementById('admin-news-title').value = '';
+    document.getElementById('admin-news-tag').value = '';
+    document.getElementById('admin-news-body').value = '';
+    if (fileInput) fileInput.value = '';
+
+    alert("Duyuru yayınlandı.");
+  }
+
+  function deleteNewsItem(id) {
+    if (!isAdminAuthenticated) return alert("Yetkisiz işlem.");
+    if (confirm("Bu duyuruyu silmek istediğinize emin misiniz?")) {
+      db.ref(`news/${id}`).remove();
+    }
+  }
+
+  function listenLiveNews() {
+    db.ref('news').on('value', (snapshot) => {
+      const newsList = document.getElementById('news-list-container');
+      const adminNewsList = document.getElementById('admin-news-list');
+      
+      newsList.innerHTML = '';
+      if (adminNewsList) adminNewsList.innerHTML = '';
+      
+      const data = snapshot.val();
+
+      if (!data) {
+        newsList.innerHTML = `
+          <div class="news-card">
+            <div class="news-card-header"><span class="news-tag">⚡ DERS SİSTEMİ</span></div>
+            <div class="news-head">Yapay Zeka Ders Asistanı Aktif</div>
+            <div class="news-body">Sorularınızı metin yazarak, sesinizle konuşarak, PDF veya soru fotoğrafı kırparak sorabilirsiniz.</div>
+            <div class="news-footer"><span class="news-date">Sistem Bildirimi</span></div>
+          </div>`;
+        return;
+      }
+
+      Object.keys(data).reverse().forEach(id => {
+        const item = data[id];
+        const dateStr = new Date(item.timestamp || Date.now()).toLocaleDateString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+        const delBtnHTML = isAdminAuthenticated ? `<button class="news-del-btn" onclick="deleteNewsItem('${id}')">Sil 🗑️</button>` : '';
+        const imgHTML = item.image ? `<img src="${item.image}" class="news-img" alt="Duyuru Görseli">` : '';
+
+        const div = document.createElement('div');
+        div.className = 'news-card';
+        div.innerHTML = `
+          <div class="news-card-header">
+            <span class="news-tag">${escapeHTML(item.tag)}</span>${delBtnHTML}
+          </div>
+          <div class="news-head">${escapeHTML(item.title)}</div>${imgHTML}
+          <div class="news-body">${escapeHTML(item.body)}</div>
+          <div class="news-footer">
+            <span class="news-date">📅 ${dateStr}</span>
+          </div>
+        `;
+        newsList.appendChild(div);
+
+        if (adminNewsList) {
+          const adminItem = document.createElement('div');
+          adminItem.style.cssText = 'background:rgba(255,255,255,0.04); border:1px solid var(--card-border); border-radius:12px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px;';
+          adminItem.innerHTML = `
+            <div style="overflow:hidden; flex:1;">
+              <div style="font-size:0.8rem; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(item.title)}</div>
+              <div style="font-size:0.68rem; color:var(--text-muted); font-weight:600;">${escapeHTML(item.tag)} •${dateStr}</div>
+            </div>
+            <button onclick="deleteNewsItem('${id}')" style="background:rgba(244,63,94,0.2); color:#f43f5e; border:1px solid rgba(244,63,94,0.4); padding:6px 12px; border-radius:8px; font-size:0.75rem; font-weight:800; cursor:pointer; flex-shrink:0;">Sil 🗑️</button>
+          `;
+          adminNewsList.appendChild(adminItem);
+        }
+      });
+    });
+  }
+
+  /* CANLI DESTEK SİSTEMİ */
+  function openNewSupportModal() {
+    document.getElementById('new-support-modal').classList.add('active');
+  }
+  function closeNewSupportModal() {
+    document.getElementById('new-support-modal').classList.remove('active');
+  }
+
+  async function createNewSupportTicket() {
+    if (!currentUser) return alert("Lütfen giriş yapınız.");
+
+    const subject = document.getElementById('sup-subject').value.trim();
+    const intent = document.getElementById('sup-intent').value.trim();
+
+    if (!subject || !intent) return alert("Lütfen konu ve destek niyetinizi tam doldurunuz.");
+
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    const recentTickets = Object.values(userSupportTickets).filter(t => t.createdAt > oneHourAgo);
+    
+    if (recentTickets.length >= 2) {
+      return alert("⚠️ Saatte en fazla 2 destek talebi açabilirsiniz. Lütfen daha sonra tekrar deneyiniz.");
+    }
+
+    const ticketId = 'sup_' + Date.now();
+    const newTicket = {
+      id: ticketId,
+      uid: currentUser.uid,
+      userName: currentUser.displayName || 'İsimsiz Oyuncu',
+      userEmail: currentUser.email || 'E-posta Yok',
+      subject: subject,
+      intent: intent,
+      status: 'pending',
+      createdAt: Date.now(),
+      unreadUser: false,
+      unreadAdmin: true
+    };
+
+    await db.ref(`supports/${ticketId}`).set(newTicket);
+
+    await db.ref(`support_messages/${ticketId}`).push({
+      sender: 'user',
+      text: `[TALEBİ AÇTI] ${intent}`,
+      time: Date.now()
+    });
+
+    document.getElementById('sup-subject').value = '';
+    document.getElementById('sup-intent').value = '';
+    closeNewSupportModal();
+    activeUserTicketId = ticketId;
+    alert("✅ Destek talebiniz oluşturuldu.");
+  }
+
+  function listenUserSupportTickets() {
+    if (!currentUser) return;
+    db.ref('supports').orderByChild('uid').equalTo(currentUser.uid).on('value', (snapshot) => {
+      userSupportTickets = snapshot.val() || {};
+      let hasUnreadMessage = false;
+
+      const topicListContainer = document.getElementById('user-support-topic-list');
+      if (!topicListContainer) return;
+      topicListContainer.innerHTML = '';
+
+      const keys = Object.keys(userSupportTickets).reverse();
+
+      if (keys.length === 0) {
+        topicListContainer.innerHTML = '<div style="font-size:0.72rem; color:var(--text-muted); text-align:center; padding:10px;">Talep Yok</div>';
+        document.getElementById('user-support-chat-pane').innerHTML = `
+          <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:0.78rem; color:var(--text-muted); padding:10px; text-align:center;">
+            Henüz bir destek talebiniz bulunmuyor.
+          </div>`;
+        return;
+      }
+
+      if (!activeUserTicketId || !userSupportTickets[activeUserTicketId]) {
+        activeUserTicketId = keys[0];
+      }
+
+      keys.forEach(id => {
+        const t = userSupportTickets[id];
+        if (t.unreadUser) hasUnreadMessage = true;
+
+        let statusBadge = '<span class="support-topic-status status-pending">Beklemede</span>';
+        if (t.status === 'accepted') statusBadge = '<span class="support-topic-status status-accepted">Açık</span>';
+        if (t.status === 'closed') statusBadge = '<span class="support-topic-status status-closed">Kapandı</span>';
+
+        const topicDiv = document.createElement('div');
+        topicDiv.className = `support-topic-item ${id === activeUserTicketId ? 'active' : ''}`;
+        topicDiv.onclick = () => {
+          activeUserTicketId = id;
+          listenUserSupportTickets();
+        };
+
+        topicDiv.innerHTML = `
+          <div class="support-topic-title">${escapeHTML(t.subject)}</div>${statusBadge}
+        `;
+        topicListContainer.appendChild(topicDiv);
+      });
+
+      renderUserChatPane(activeUserTicketId);
+
+      const navBtn = document.getElementById('nav-support-btn');
+      if (navBtn) {
+        if (hasUnreadMessage) navBtn.classList.add('support-pulse');
+        else navBtn.classList.remove('support-pulse');
+      }
+    });
+  }
+
+  function renderUserChatPane(ticketId) {
+    const pane = document.getElementById('user-support-chat-pane');
+    if (!pane || !ticketId || !userSupportTickets[ticketId]) return;
+
+    const t = userSupportTickets[ticketId];
+    let statusBadgeHTML = '<span class="support-badge-status status-pending">⌛ Beklemede</span>';
+    if (t.status === 'accepted') statusBadgeHTML = '<span class="support-badge-status status-accepted">🟢 Açık</span>';
+    if (t.status === 'closed') statusBadgeHTML = '<span class="support-badge-status status-closed">🔒 Kapandı</span>';
+
+    pane.innerHTML = `
+      <div class="support-chat-header">
+        <div style="overflow:hidden;">
+          <div style="font-size:0.82rem; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(t.subject)}</div>
+          <div style="font-size:0.68rem; color:var(--text-muted);">📌 Niyet: ${escapeHTML(t.intent)}</div>
+        </div>
+        <div>${statusBadgeHTML}</div>
+      </div>
+      <div id="user-msg-box-${ticketId}" class="support-messages-box"></div>
+      <div class="support-input-area">
+        ${t.status === 'accepted' ? `
+          <input type="text" id="user-sup-input-${ticketId}" class="admin-input" style="padding:6px 10px; font-size:0.8rem;" placeholder="Mesajınızı yazın..." onkeypress="if(event.key==='Enter') sendSupportMessage('${ticketId}', 'user')">
+          <button onclick="sendSupportMessage('${ticketId}', 'user')" style="background:var(--emerald); color:#000; border:none; padding:6px 12px; border-radius:10px; font-weight:800; font-size:0.78rem; cursor:pointer;">Gönder</button>
+        ` : (t.status === 'pending' ? `
+          <div style="font-size:0.72rem; color:var(--amber); text-align:center; width:100%; padding:4px;">💬 Yönetici destek talebini kabul edince sohbet aktif olacaktır.</div>
+        ` : `
+          <div style="font-size:0.72rem; color:var(--rose); text-align:center; width:100%; padding:4px; font-weight:700;">🔒 Bu destek talebi kapatılmıştır (Kapandı).</div>
+        `)}
+      </div>
+    `;
+
+    listenSupportMessages(ticketId, `user-msg-box-${ticketId}`, 'user');
+  }
+
+  function listenAdminSupportTickets() {
+    db.ref('supports').on('value', (snapshot) => {
+      allSupportTickets = snapshot.val() || {};
+      const topicListContainer = document.getElementById('admin-support-topic-list');
+      if (!topicListContainer) return;
+      topicListContainer.innerHTML = '';
+
+      const keys = Object.keys(allSupportTickets).reverse();
+
+      if (keys.length === 0) {
+        topicListContainer.innerHTML = '<div style="font-size:0.72rem; color:var(--text-muted); text-align:center; padding:10px;">Talep Yok</div>';
+        document.getElementById('admin-support-chat-pane').innerHTML = `
+          <div style="display:flex; justify-content:center; align-items:center; height:100%; font-size:0.78rem; color:var(--text-muted); padding:10px; text-align:center;">
+            Hiç destek talebi bulunmamaktadır.
+          </div>`;
+        return;
+      }
+
+      if (!activeAdminTicketId || !allSupportTickets[activeAdminTicketId]) {
+        activeAdminTicketId = keys[0];
+      }
+
+      keys.forEach(id => {
+        const t = allSupportTickets[id];
+        let statusBadge = '<span class="support-topic-status status-pending">Beklemede</span>';
+        if (t.status === 'accepted') statusBadge = '<span class="support-topic-status status-accepted">Açık</span>';
+        if (t.status === 'closed') statusBadge = '<span class="support-topic-status status-closed">Kapandı</span>';
+
+        const topicDiv = document.createElement('div');
+        topicDiv.className = `support-topic-item ${id === activeAdminTicketId ? 'active' : ''}`;
+        topicDiv.onclick = () => {
+          activeAdminTicketId = id;
+          listenAdminSupportTickets();
+        };
+
+        topicDiv.innerHTML = `
+          <div style="font-size:0.72rem; font-weight:800; color:var(--amber); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">👤 ${escapeHTML(t.userName)}</div>
+          <div class="support-topic-title">${escapeHTML(t.subject)}</div>${statusBadge}
+        `;
+        topicListContainer.appendChild(topicDiv);
+      });
+
+      renderAdminChatPane(activeAdminTicketId);
+    });
+  }
+
+  function renderAdminChatPane(ticketId) {
+    const pane = document.getElementById('admin-support-chat-pane');
+    if (!pane || !ticketId || !allSupportTickets[ticketId]) return;
+
+    const t = allSupportTickets[ticketId];
+    let statusBadgeHTML = '<span class="support-badge-status status-pending">⌛ Beklemede</span>';
+    if (t.status === 'accepted') statusBadgeHTML = '<span class="support-badge-status status-accepted">🟢 Sohbet Açık</span>';
+    if (t.status === 'closed') statusBadgeHTML = '<span class="support-badge-status status-closed">🔒 Kapandı</span>';
+
+    pane.innerHTML = `
+      <div class="support-chat-header">
+        <div style="overflow:hidden;">
+          <div style="font-size:0.82rem; font-weight:800; color:#fff;">👤 <span class="player-name-text">${escapeHTML(t.userName)}</span> (${escapeHTML(t.userEmail)})</div>
+          <div style="font-size:0.72rem; color:var(--text-muted);">📌 <strong>Konu:</strong> ${escapeHTML(t.subject)}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          ${statusBadgeHTML}
+        </div>
+      </div>
+      <div style="font-size:0.72rem; color:var(--text-muted); padding:6px 10px; background:rgba(0,0,0,0.3); border-bottom:1px solid var(--card-border);">
+        📝 <strong>Niyet:</strong> ${escapeHTML(t.intent)}
+      </div>
+      
+      <div id="admin-msg-box-${ticketId}" class="support-messages-box"></div>
+
+      <div style="padding:6px 10px; background:rgba(15, 23, 42, 0.8); border-top:1px solid var(--card-border); display:flex; gap:6px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:6px;">
+          ${t.status === 'pending' ? `<button onclick="updateSupportStatus('${ticketId}', 'accepted')" style="background:var(--emerald); color:#000; border:none; padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.72rem; cursor:pointer;">✅ Kabul Et & Aç</button>` : ''}
+          ${t.status !== 'closed' ? `<button onclick="updateSupportStatus('${ticketId}', 'closed')" style="background:rgba(244,63,94,0.2); color:#f43f5e; border:1px solid rgba(244,63,94,0.4); padding:4px 8px; border-radius:6px; font-weight:800; font-size:0.72rem; cursor:pointer;">🔒 Talebi Kapat (Kapandı)</button>` : ''}
+        </div>
+      </div>
+
+      <div class="support-input-area">
+        ${t.status === 'accepted' ? `
+          <input type="text" id="admin-sup-input-${ticketId}" class="admin-input" style="padding:6px 10px; font-size:0.8rem;" placeholder="Oyuncuya yanıt yazın..." onkeypress="if(event.key==='Enter') sendSupportMessage('${ticketId}', 'admin')">
+          <button onclick="sendSupportMessage('${ticketId}', 'admin')" style="background:var(--primary); color:#fff; border:none; padding:6px 12px; border-radius:10px; font-weight:800; font-size:0.78rem; cursor:pointer;">Gönder</button>
+        ` : (t.status === 'pending' ? `
+          <div style="font-size:0.72rem; color:var(--amber); text-align:center; width:100%; padding:4px;">💬 Sohbeti başlatmak için "Kabul Et" butonuna basınız.</div>
+        ` : `
+          <div style="font-size:0.72rem; color:var(--rose); text-align:center; width:100%; padding:4px; font-weight:700;">🔒 Bu destek talebi kapatılmıştır (Kapandı).</div>
+        `)}
+      </div>
+    `;
+
+    listenSupportMessages(ticketId, `admin-msg-box-${ticketId}`, 'admin');
+  }
+
+  async function updateSupportStatus(ticketId, status) {
+    await db.ref(`supports/${ticketId}`).update({
+      status: status,
+      unreadUser: true
+    });
+  }
+
+  async function sendSupportMessage(ticketId, senderRole) {
+    const inputEl = document.getElementById(senderRole === 'admin' ? `admin-sup-input-${ticketId}` : `user-sup-input-${ticketId}`);
+    if (!inputEl) return;
+    const txt = inputEl.value.trim();
+    if (!txt) return;
+
+    await db.ref(`support_messages/${ticketId}`).push({
+      sender: senderRole,
+      text: txt,
+      time: Date.now()
+    });
+
+    await db.ref(`supports/${ticketId}`).update({
+      unreadUser: senderRole === 'admin',
+      unreadAdmin: senderRole === 'user'
+    });
+
+    inputEl.value = '';
+  }
+
+  function listenSupportMessages(ticketId, containerId, viewerRole) {
+    db.ref(`support_messages/${ticketId}`).on('value', (snap) => {
+      const box = document.getElementById(containerId);
+      if (!box) return;
+      box.innerHTML = '';
+      const msgs = snap.val() || {};
+      const ticketObj = (viewerRole === 'admin' ? allSupportTickets : userSupportTickets)[ticketId] || {};
+      const playerName = ticketObj.userName || 'Oyuncu';
+
+      Object.values(msgs).forEach(m => {
+        const item = document.createElement('div');
+        item.className = `sup-msg-item ${m.sender}`;
+        
+        if (m.sender === 'admin') {
+          item.innerHTML = `<span class="admin-glow-text">👑 Admin</span>: ${escapeHTML(m.text)}`;
+        } else {
+          item.innerHTML = `👤 <span class="player-name-text">${escapeHTML(playerName)}</span>:${escapeHTML(m.text)}`;
+        }
+        
+        box.appendChild(item);
+      });
+      box.scrollTop = box.scrollHeight;
+
+      if (viewerRole === 'user' && document.getElementById('sec-support').classList.contains('active')) {
+        db.ref(`supports/${ticketId}`).update({ unreadUser: false });
+      }
+    });
+  }
+
+  function openProfileModal() { document.getElementById('profile-modal').classList.add('active'); }
+  function closeProfileModal() { document.getElementById('profile-modal').classList.remove('active'); }
+
+  async function saveProfileName() {
+    const newName = document.getElementById('edit-display-name').value.trim();
+    if (!newName || !currentUser) return;
+    try {
+      await currentUser.updateProfile({ displayName: newName });
+      updateUserHeaderUI(newName);
+      closeProfileModal();
+      alert("Profil isminiz güncellendi.");
+    } catch (e) { alert("Hata: " + e.message); }
+  }
+
+  function logoutUser() {
+    if (confirm("Oturumu kapatmak istediğinize emin misiniz?")) {
+      closeProfileModal();
+      auth.signOut();
+    }
+  }
+
+  function toggleDrawer(open) {
+    document.getElementById('history-drawer').classList.toggle('active', open);
+    document.getElementById('drawer-overlay').classList.toggle('active', open);
+  }
+
+  let chatListenerBound = false;
+  let chatLoadToken = 0;
+
+  function loadUserChatsList() {
+    if (!currentUser) return;
+    const ref = db.ref(`user_chats/${currentUser.uid}`);
+    if (chatListenerBound) ref.off();
+    chatListenerBound = true;
+
+    ref.on('value', (snapshot) => {
+      allUserChats = snapshot.val() || {};
+      renderChatHistoryItems(allUserChats);
+
+      const chatKeys = Object.keys(allUserChats)
+        .sort((a,b) => (allUserChats[a].lastUpdated || 0) - (allUserChats[b].lastUpdated || 0));
+
+      if (chatKeys.length === 0) {
+        createNewChat();
+      } else if (!activeChatId || !allUserChats[activeChatId]) {
+        switchChat(chatKeys[chatKeys.length - 1]);
+      }
+    });
+  }
+
+  function renderChatHistoryItems(chatsObj) {
+    const container = document.getElementById('history-list-container');
+    container.innerHTML = '';
+    const keys = Object.keys(chatsObj).sort((a,b) =>
+      (chatsObj[b].lastUpdated || 0) - (chatsObj[a].lastUpdated || 0)
+    );
+
+    keys.forEach(id => {
+      const chat = chatsObj[id];
+      const item = document.createElement('div');
+      item.className = `history-item ${id === activeChatId ? 'active' : ''}`;
+
+      const dateStr = chat.lastUpdated
+        ? new Date(chat.lastUpdated).toLocaleDateString('tr-TR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})
+        : '';
+
+      const title = escapeHTML(chat.title || 'Yeni Ders Çalışması');
+      item.innerHTML = `
+        <div class="history-info" onclick="switchChat('${id}')">
+          <div class="history-item-title">${title}</div>
+          <div class="history-item-date">${dateStr}</div>
+        </div>
+        <span class="delete-chat-btn" onclick="deleteChat('${id}', event)">🗑️</span>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function filterChatHistory() {
+    const query = document.getElementById('chat-search-input').value.toLowerCase().trim();
+    const filtered = {};
+    Object.keys(allUserChats).forEach(id => {
+      if ((allUserChats[id].title || '').toLowerCase().includes(query)) filtered[id] = allUserChats[id];
+    });
+    renderChatHistoryItems(filtered);
+  }
+
+  async function createNewChat() {
+    if (!currentUser) return;
+    activeChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    toggleDrawer(false);
+
+    const name = currentUser.displayName || 'Öğrencimiz';
+    document.getElementById('ai-chat-box').innerHTML = '';
+    await db.ref(`user_chats/${currentUser.uid}/${activeChatId}`).set({
+      title: 'Yeni Ders Sohbeti',
+      lastUpdated: Date.now(),
+      createdAt: Date.now()
+    });
+
+    renderAIMessage(`Merhaba **${name}**. Hazırım. Sorunuzu doğrudan yazabilir veya görsel/PDF yükleyebilirsiniz.`);
+  }
+
+  async function switchChat(chatId) {
+    if (!currentUser || !chatId) return;
+    if (activeAIAbortController) { activeAIAbortController.abort(); activeAIAbortController = null; }
+    isAIProcessing = false;
+    activeChatId = chatId;
+    toggleDrawer(false);
+    const token = ++chatLoadToken;
+
+    const chatBox = document.getElementById('ai-chat-box');
+    chatBox.innerHTML = '<div style="padding:18px;color:var(--text-muted);text-align:center;">Sohbet yükleniyor…</div>';
+
+    try {
+      const snapshot = await db.ref(`chat_messages/${currentUser.uid}/${chatId}`).once('value');
+      if (token !== chatLoadToken || activeChatId !== chatId) return;
+
+      chatBox.innerHTML = '';
+      const msgs = snapshot.val();
+      if (msgs) {
+        Object.values(msgs)
+          .sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0))
+          .forEach(m => {
+            if (!m || !m.text) return;
+            if (m.role === 'user') renderUserMessage(m.text);
+            else if (m.role === 'assistant') renderAIMessage(m.text);
+          });
+      }
+
+      if (!msgs) {
+        renderAIMessage('Bu sohbet henüz boş. Sorunuzu yazabilirsiniz.');
+      }
+      renderChatHistoryItems(allUserChats);
+    } catch (err) {
+      chatBox.innerHTML = `<div class="ai-error" style="padding:18px;">Sohbet yüklenemedi: ${escapeHTML(err.message)}</div>`;
+    }
+  }
+
+  async function deleteChat(chatId, e) {
+    e.stopPropagation();
+    if (!currentUser) return;
+    if (!confirm("Bu sohbeti ve içindeki mesajları silmek istediğinize emin misiniz?")) return;
+
+    try {
+      await Promise.all([
+        db.ref(`user_chats/${currentUser.uid}/${chatId}`).remove(),
+        db.ref(`chat_messages/${currentUser.uid}/${chatId}`).remove()
+      ]);
+
+      if (activeChatId === chatId) {
+        activeChatId = null;
+        const remaining = Object.keys(allUserChats).filter(id => id !== chatId);
+        if (remaining.length) {
+          const next = remaining.sort((a,b) => (allUserChats[a].lastUpdated||0) - (allUserChats[b].lastUpdated||0)).pop();
+          await switchChat(next);
+        } else {
+          await createNewChat();
+        }
+      }
+    } catch (err) {
+      alert("Sohbet silinemedi: " + err.message);
+    }
+  }
+
+  function renderUserMessage(text) {
+    const chatBox = document.getElementById('ai-chat-box');
+    const group = document.createElement('div');
+    group.className = 'msg-group user';
+    group.innerHTML = `<div class="user-msg"><div>${escapeHTML(text || '')}</div></div>`;
+    chatBox.appendChild(group);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function parseMarkdown(text) {
+    if (!text) return '';
+    let safe = escapeHTML(String(text));
+
+    // Kod blokları
+    const codeBlocks = [];
+    safe = safe.replace(/```([\s\S]*?)```/g, (_, code) => {
+      const idx = codeBlocks.push(`<pre style="overflow:auto;background:rgba(0,0,0,.35);padding:10px;border-radius:10px;margin:8px 0;"><code>${code.trim()}</code></pre>`) - 1;
+      return `@@CODEBLOCK_${idx}@@`;
+    });
+
+    // Basit ve güvenli Markdown
+    safe = safe.replace(/^### (.*)$/gm, '<h4 style="margin:10px 0 5px;">$1</h4>');
+    safe = safe.replace(/^## (.*)$/gm, '<h3 style="margin:10px 0 5px;">$1</h3>');
+    safe = safe.replace(/^# (.*)$/gm, '<h2 style="margin:10px 0 6px;">$1</h2>');
+    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    safe = safe.replace(/`([^`\n]+)`/g, '<code style="background:rgba(255,255,255,.08);padding:1px 4px;border-radius:4px;">$1</code>');
+
+    // Basit tablolar
+    const lines = safe.split('\n');
+    let out = [];
+    let table = null;
+
+    const flushTable = () => {
+      if (!table) return;
+      if (table.length) {
+        let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:.8rem;">';
+        table.forEach((cells, rowIndex) => {
+          html += `<tr>${cells.map(c => rowIndex === 0
+            ? `<th style="border:1px solid var(--card-border);padding:7px;background:rgba(255,255,255,.06);text-align:left;">${c}</th>`
+            : `<td style="border:1px solid var(--card-border);padding:7px;">${c}</td>`).join('')}</tr>`;
+        });
+        html += '</table></div>';
+        out.push(html);
+      }
+      table = null;
+    };
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+        const cells = trimmed.split('|').slice(1,-1).map(c => c.trim());
+        if (cells.every(c => /^:?-{3,}:?$/.test(c))) continue;
+        if (!table) table = [];
+        table.push(cells);
+      } else {
+        flushTable();
+        out.push(line);
+      }
+    }
+    flushTable();
+
+    let html = out.join('\n').replace(/\n/g, '<br>');
+    codeBlocks.forEach((block, i) => {
+      html = html.replace(`@@CODEBLOCK_${i}@@`, block);
+    });
+    return html;
+  }
+
+  function renderAIMessage(text, options = {}) {
+    const chatBox = document.getElementById('ai-chat-box');
+    if (!chatBox) return;
+
+    // Aynı Firebase mesajı UI'ya ikinci kez eklenmesin.
+    const fingerprint = btoa(unescape(encodeURIComponent(String(text || '').slice(0, 500)))).replace(/=/g,'');
+    if (!options.allowDuplicate && chatBox.querySelector(`[data-msg-fp="${fingerprint}"]`)) return;
+
+    const group = document.createElement('div');
+    group.className = 'msg-group ai';
+    group.dataset.msgFp = fingerprint;
+
+    group.innerHTML = `
+      <div class="ai-msg">
+        <div class="ai-msg-header">
+          <div class="ai-title">⚡ İMAN POWER AI</div>
+        </div>
+        <div class="ai-msg-content">${parseMarkdown(text)}</div>
+        <div class="msg-toolbar">
+          <button class="msg-tool-btn tts-btn" onclick="playMaleTTS(this)">🔊 Dinle</button>
+          <button class="msg-tool-btn" onclick="copyMsgText(this)">📋 Kopyala</button>
+        </div>
+      </div>
+    `;
+
+    chatBox.appendChild(group);
+
+    if (window.renderMathInElement) {
+      try {
+        renderMathInElement(group, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError: false
+        });
+      } catch(e) {}
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return group;
+  }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+  }
+
+  function copyMsgText(btn) {
+    const card = btn.closest('.ai-msg');
+    const text = card.querySelector('.ai-msg-content').innerText;
+    navigator.clipboard.writeText(text);
+    btn.innerText = '✅ Kopyalandı';
+    setTimeout(() => btn.innerText = '📋 Kopyala', 2000);
+  }
+
+  function cleanTextForSpeech(text) {
+    if (!text) return '';
+    let clean = text;
+    clean = clean.replace(/<[^>]*>?/gm, ' ');
+    clean = clean.replace(/\$\$/g, ' ').replace(/\$/g, ' ').replace(/\\\(|\\\)|\\\[|\\\]/g, ' ');
+    clean = clean.replace(/[\*\#\_~`|]/g, ' ');
+    clean = clean.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+    clean = clean.replace(/[▶⏸🔄⚡🎯📐🔬📝⚽👑📄📷💬📌✍️✅📋📜✕🔍🎧]/g, '');
+    clean = clean.replace(/\s+/g, ' ').trim();
+    return clean;
+  }
+
+  function playMaleTTS(btn) {
+    if (!('speechSynthesis' in window)) {
+      return alert("Tarayıcınız ses okuma özelliğini desteklemiyor.");
+    }
+
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      btn.innerText = '🔊 Dinle';
+      btn.classList.remove('tts-active');
+      return;
+    }
+
+    const card = btn.closest('.ai-msg');
+    const rawText = card.querySelector('.ai-msg-content').innerText;
+    const cleanText = cleanTextForSpeech(rawText);
+
+    if (!cleanText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'tr-TR';
+
+    const voices = window.speechSynthesis.getVoices();
+    const trVoices = voices.filter(v => v.lang.includes('tr') || v.lang.includes('TR'));
+    
+    let maleVoice = trVoices.find(v => 
+      v.name.toLowerCase().includes('male') || 
+      v.name.toLowerCase().includes('erkek') || 
+      v.name.toLowerCase().includes('cem') || 
+      v.name.toLowerCase().includes('ahmet')
+    );
+
+    if (!maleVoice && trVoices.length > 0) maleVoice = trVoices[0];
+    if (maleVoice) utterance.voice = maleVoice;
+
+    utterance.pitch = 0.88;
+    utterance.rate = 1.0;
+
+    utterance.onstart = () => {
+      btn.innerText = '⏸️ Durdur';
+      btn.classList.add('tts-active');
+    };
+
+    utterance.onend = utterance.onerror = () => {
+      btn.innerText = '🔊 Dinle';
+      btn.classList.remove('tts-active');
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+  }
+
+  function toggleAttachmentMenu(e) {
+    e.stopPropagation();
+    const popover = document.getElementById('attachment-popover');
+    popover.classList.toggle('active');
+  }
+
+  function triggerFileInput(inputId) {
+    document.getElementById('attachment-popover').classList.remove('active');
+    document.getElementById(inputId).click();
+  }
+
+  document.addEventListener('click', (e) => {
+    const popover = document.getElementById('attachment-popover');
+    if (popover && !popover.contains(e.target)) {
+      popover.classList.remove('active');
+    }
+  });
+
+  async function handleFileSelect(input) {
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    pendingPdfImages = [];
+    pendingPdfText = '';
+    pendingAttachmentName = file.name || '';
+
+    const imageEl = document.getElementById('crop-image');
+
+    if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+      try {
+        if (!window.pdfjsLib) throw new Error('PDF motoru yüklenemedi.');
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data: arrayBuffer, useWorkerFetch: true}).promise;
+
+        // Soruların bulunduğu PDF'lerde tüm sayfaları modele göstermek için sayfa sınırı.
+        // Çok büyük PDF'lerde istek gövdesinin şişmesini önlemek için ilk 10 sayfa kullanılır.
+        const pageCount = Math.min(pdf.numPages, 10);
+
+        for (let pageNo = 1; pageNo <= pageCount; pageNo++) {
+          const page = await pdf.getPage(pageNo);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(x => x.str || '').join(' ').replace(/\s+/g,' ').trim();
+          if (pageText) pendingPdfText += `\n[SAYFA ${pageNo}]\n${pageText}`;
+
+          // Daha yüksek çözünürlük: küçük yazı ve grafikler için.
+          const baseViewport = page.getViewport({scale: 1});
+          const scale = Math.min(2.4, Math.max(1.8, 1800 / Math.max(baseViewport.width, baseViewport.height)));
+          const viewport = page.getViewport({scale});
+
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.ceil(viewport.width);
+          canvas.height = Math.ceil(viewport.height);
+          const ctx = canvas.getContext('2d', {alpha:false});
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+
+          await page.render({canvasContext:ctx, viewport, intent:'display'}).promise;
+
+          pendingPdfImages.push(canvas.toDataURL('image/jpeg', 0.93));
+        }
+
+        const badge = document.getElementById('image-preview-badge');
+        badge.innerHTML = `
+          <span class="attachment-chip">📄 ${escapeHTML(file.name)}</span>
+          <span class="attachment-chip">${pendingPdfImages.length} sayfa hazır</span>
+        `;
+        badge.style.display = 'flex';
+
+        if (pdf.numPages > pageCount) {
+          badge.innerHTML += `<span class="attachment-chip">İlk ${pageCount} sayfa</span>`;
+        }
+
+        input.value = '';
+      } catch (e) {
+        console.error(e);
+        alert("PDF okunamadı: " + e.message);
+        pendingPdfImages = [];
+        pendingPdfText = '';
+        input.value = '';
+      }
+      return;
+    }
+
+    // Görsel: orijinal görseli kaybetmeden kırpma ekranına al.
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imageEl.onload = () => openCropModal();
+      imageEl.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  function openCropModal() {
+    document.getElementById('crop-modal').classList.add('active');
+    const imageEl = document.getElementById('crop-image');
+
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(imageEl, {
+      viewMode: 1,
+      autoCropArea: 0.95,
+      responsive: true,
+      background: false,
+      movable: true,
+      zoomable: true,
+      rotatable: false
+    });
+  }
+
+  function applyCrop() {
+    if (!cropper) return;
+    const canvas = cropper.getCroppedCanvas({
+      maxWidth: 1800,
+      maxHeight: 1800,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+
+    pendingCroppedImageBase64 = canvas.toDataURL('image/jpeg', 0.93);
+
+    const badge = document.getElementById('image-preview-badge');
+    badge.innerHTML = `
+      <span class="attachment-chip">🖼️ ${escapeHTML(pendingAttachmentName || 'Görsel')}</span>
+      <span class="attachment-chip">Yüksek kalite hazır</span>
+    `;
+    badge.style.display = 'flex';
+
+    closeCropModal();
+  }
+
+  function cancelCrop() {
+    closeCropModal();
+    pendingCroppedImageBase64 = null;
+    pendingAttachmentName = '';
+    document.getElementById('image-preview-badge').style.display = 'none';
+    document.getElementById('ai-image-input').value = '';
+    document.getElementById('ai-pdf-input').value = '';
+  }
+
+  function closeCropModal() {
+    document.getElementById('crop-modal').classList.remove('active');
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
+
+  function toggleSpeechToText() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      return alert("Tarayıcınız ses tanıma özelliğini desteklememektedir.");
+    }
+
+    const micBtn = document.getElementById('mic-btn');
+    const inputEl = document.getElementById('ai-input');
+
+    if (isRecording && recognition) {
+      recognition.stop();
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'tr-TR';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      isRecording = true;
+      micBtn.classList.add('mic-active');
+      inputEl.placeholder = "Dinleniyor... Sorunuzu söyleyin...";
+    };
+
+    recognition.onresult = (e) => {
+      let transcript = '';
+      for (let i = e.resultIndex; i < e.results.length; ++i) {
+        transcript += e.results[i][0].transcript;
+      }
+      inputEl.value = transcript;
+    };
+
+    recognition.onerror = () => { stopRecordingUI(); };
+
+    recognition.onend = () => {
+      stopRecordingUI();
+      if (inputEl.value.trim().length > 0) {
+        setTimeout(() => { askAI(); }, 300);
+      }
+    };
+
+    try { recognition.start(); } catch (err) { stopRecordingUI(); }
+
+    function stopRecordingUI() {
+      isRecording = false;
+      micBtn.classList.remove('mic-active');
+      inputEl.placeholder = "Soru sorun, PDF/fotoğraf ekleyin veya sesle konuşun...";
+    }
+  }
+
+  function sendQuickPrompt(promptText) {
+    document.getElementById('ai-input').value = promptText;
+    askAI();
+  }
+
+  /*
+   * İMAN POWER AI — canlı, bağlamlı, tekrar önlemeli soru çözüm motoru.
+   * Not: Hiçbir LLM için matematiksel/akademik olarak gerçek "%100 doğruluk" garantisi verilemez.
+   * Bu sürüm; eski sohbet bağlamı, görsel/PDF çoklu sayfa analizi, yüksek çözünürlük,
+   * tekrar engelleme, akış güvenliği ve cevap öncesi kontrol talimatlarını birlikte kullanır.
+   */
+
+  function extractStreamText(obj) {
+    const delta = obj?.choices?.[0]?.delta?.content;
+    if (typeof delta === 'string') return delta;
+    if (Array.isArray(delta)) {
+      return delta.map(x => {
+        if (typeof x === 'string') return x;
+        return x?.text || '';
+      }).join('');
+    }
+    return '';
+  }
+
+  function trimForContext(text, max = 1800) {
+    const s = String(text || '').replace(/\s+/g, ' ').trim();
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  async function buildConversationContext() {
+    if (!currentUser) return [];
+
+    const result = [];
+    try {
+      const currentSnap = await db.ref(`chat_messages/${currentUser.uid}/${activeChatId}`).once('value');
+      const current = Object.values(currentSnap.val() || {})
+        .filter(m => m && (m.role === 'user' || m.role === 'assistant') && m.text)
+        .sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+      current.slice(-12).forEach(m => {
+        result.push({
+          role: m.role === 'assistant' ? 'assistant' : 'user',
+          content: trimForContext(m.text, 1800)
+        });
+      });
+
+      // Eski sohbetlerden kısa hafıza: başlık + son birkaç mesaj.
+      const oldIds = Object.keys(allUserChats)
+        .filter(id => id !== activeChatId)
+        .sort((a,b) => (allUserChats[b].lastUpdated || 0) - (allUserChats[a].lastUpdated || 0))
+        .slice(0, 3);
+
+      if (oldIds.length) {
+        const oldSnaps = await Promise.all(
+          oldIds.map(id => db.ref(`chat_messages/${currentUser.uid}/${id}`).once('value'))
+        );
+
+        const memoryParts = [];
+        oldSnaps.forEach((snap, idx) => {
+          const msgs = Object.values(snap.val() || {})
+            .filter(m => m && m.text)
+            .sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0))
+            .slice(-6);
+
+          if (!msgs.length) return;
+          const title = allUserChats[oldIds[idx]]?.title || 'Eski sohbet';
+          memoryParts.push(`SOHBET: ${title}\n` + msgs.map(m =>
+            `${m.role === 'user' ? 'Öğrenci' : 'AI'}: ${trimForContext(m.text, 700)}`
+          ).join('\n'));
+        });
+
+        if (memoryParts.length) {
+          result.unshift({
+            role: 'system',
+            content:
+              'ÖNCEKİ SOHBETLERDEN KISA HAFIZA:\n' +
+              memoryParts.join('\n\n') +
+              '\n\nBu bilgiler yalnızca öğrencinin önceki konuşmalarını hatırlamak içindir. ' +
+              'Yeni sorunun açık talimatı her zaman önceliklidir. Eski konuşmada hata varsa onu tekrar etme; ' +
+              'gerekirse yeni soruyu yeniden değerlendir.'
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Bağlam alınamadı:', e);
+    }
+    return result;
+  }
+
+  async function readMistralStream(response, onDelta, signal) {
+    if (!response.body) throw new Error('Sunucu canlı akış gövdesi döndürmedi.');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let doneReceived = false;
+
+    while (!doneReceived) {
+      if (signal?.aborted) throw new DOMException('İstek iptal edildi', 'AbortError');
+
+      const {done, value} = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, {stream:true});
+      const events = buffer.split(/\r?\n\r?\n/);
+      buffer = events.pop() || '';
+
+      for (const event of events) {
+        const dataLines = event.split(/\r?\n/)
+          .filter(line => line.startsWith('data:'))
+          .map(line => line.slice(5).trim());
+
+        for (const dataStr of dataLines) {
+          if (!dataStr) continue;
+          if (dataStr === '[DONE]') {
+            doneReceived = true;
+            break;
+          }
+
+          try {
+            const json = JSON.parse(dataStr);
+            const delta = extractStreamText(json);
+            if (delta) onDelta(delta);
+          } catch (_) {
+            // Parçalı SSE JSON'u bir sonraki event'te tamamlanabilir.
+          }
+        }
+        if (doneReceived) break;
+      }
+    }
+
+    // Son parça boşlukta kaldıysa işle.
+    const finalLines = buffer.split(/\r?\n/).filter(line => line.startsWith('data:'));
+    for (const line of finalLines) {
+      const dataStr = line.slice(5).trim();
+      if (!dataStr || dataStr === '[DONE]') continue;
+      try {
+        const json = JSON.parse(dataStr);
+        const delta = extractStreamText(json);
+        if (delta) onDelta(delta);
+      } catch (_) {}
+    }
+  }
+
+  function setMistralKeyForLocalTest() {
+    const key = prompt('Yeni Mistral API anahtarınızı girin. Bu anahtar tarayıcı localStorage alanında tutulur; üretimde güvenli proxy kullanın.');
+    if (!key) return;
+    localStorage.setItem('iman_power_mistral_key', key.trim());
+    alert('Mistral anahtarı bu tarayıcı için kaydedildi. Sayfayı yenileyin.');
+  }
+
+  async function askAI() {
+    if (isAIProcessing) return;
+
+    const inputEl = document.getElementById('ai-input');
+    const prompt = inputEl.value.trim();
+
+    const hasImage = !!pendingCroppedImageBase64;
+    const hasPdf = pendingPdfImages.length > 0;
+
+    if ((!prompt && !hasImage && !hasPdf) || !currentUser) return;
+    if (!activeChatId) await createNewChat();
+
+    isAIProcessing = true;
+    activeAIAbortController = new AbortController();
+    const signal = activeAIAbortController.signal;
+
+    const imagePartBase64 = pendingCroppedImageBase64;
+    const pdfImages = pendingPdfImages.slice();
+    const pdfText = pendingPdfText;
+    const attachmentName = pendingAttachmentName;
+
+    inputEl.value = '';
+    document.getElementById('image-preview-badge').style.display = 'none';
+    pendingCroppedImageBase64 = null;
+    pendingPdfImages = [];
+    pendingPdfText = '';
+    pendingAttachmentName = '';
+    document.getElementById('ai-image-input').value = '';
+    document.getElementById('ai-pdf-input').value = '';
+
+    const userDisplayMsg =
+      prompt ||
+      (hasPdf ? `📄 PDF soru belgesi: ${attachmentName || 'Belge'}` :
+      hasImage ? `🖼️ Görsel soru: ${attachmentName || 'Görsel'}` : 'Soru');
+
+    renderUserMessage(userDisplayMsg);
+
+    // Aynı sorunun iki kez kaydolmasını önlemek için benzersiz istek kimliği.
+    const requestId = `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+
+    try {
+      await db.ref(`chat_messages/${currentUser.uid}/${activeChatId}/${requestId}`).set({
+        role:'user',
+        text:userDisplayMsg,
+        timestamp:Date.now(),
+        requestId
+      });
+
+      await db.ref(`user_chats/${currentUser.uid}/${activeChatId}`).update({
+        title: trimForContext(prompt || userDisplayMsg.replace(/^[^\w]+/,'') || 'Soru Çözümü', 42),
+        lastUpdated: Date.now()
+      });
+
+      const chatBox = document.getElementById('ai-chat-box');
+      const group = document.createElement('div');
+      group.className = 'msg-group ai';
+      group.innerHTML = `
+        <div class="ai-msg">
+          <div class="ai-msg-header">
+            <div class="ai-title">⚡ İMAN POWER AI <span style="font-size:.62rem;color:var(--text-muted);">CANLI</span></div>
+          </div>
+          <div class="ai-msg-content streaming-cursor">Yanıt hazırlanıyor…</div>
+          <div class="msg-toolbar">
+            <button class="msg-tool-btn tts-btn" onclick="playMaleTTS(this)">🔊 Dinle</button>
+            <button class="msg-tool-btn" onclick="copyMsgText(this)">📋 Kopyala</button>
+          </div>
+        </div>
+      `;
+      chatBox.appendChild(group);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const contentDiv = group.querySelector('.ai-msg-content');
+
+      const systemPrompt = `
+Sen İman Power'ın eğitim amaçlı yapay zeka ders asistanısın. Türkçe konuş.
+ÖNCELİK: Öğrencinin mevcut sorusunu doğru anlamak ve doğrudan çözmek.
+
+KESİN TALİMATLAR:
+1) Kullanıcı istemedikçe ASLA örnek soru, benzer örnek, ek alıştırma, "örneğin", "mesela" türü gereksiz örnekler verme.
+2) Soruyu tekrar tekrar yazma. Öğrencinin verdiği soruyu yalnızca çözüm için gerektiği kadar referans al.
+3) Aynı cümleyi, paragrafı, çözüm adımını veya sonucu tekrarlama.
+4) Gereksiz selamlama, uzun giriş, konu dışı bilgi, motivasyon konuşması ve kapanış ekleme.
+5) Kullanıcının sorusu açıksa doğrudan cevaba geç.
+6) Matematik/fen sorularında işlemleri sırayla kontrol et; ara sonuçları ve son cevabı kendi içinde ikinci kez doğrula. Hatalı olabilecek bir sonucu kesinmiş gibi yazma.
+7) Görsel veya PDF geldiğinde önce görüntüyü dikkatlice oku. Sayılar, işaretler, tablo, grafik, şekil, seçenek ve birimlere özellikle dikkat et.
+8) Görsel/PDF okunamıyorsa tahmin etme. Okunamayan kısmı açıkça belirt ve yalnızca okunabilen kısmı çöz.
+9) PDF birden fazla sayfa içeriyorsa ilgili bütün sayfaları birlikte değerlendir; sorunun devamını başka sayfada aramayı unutma.
+10) PDF'den çıkarılan metin ile görüntü arasında çelişki varsa görüntüyü esas al ve çelişkiyi kontrol et.
+11) Öğrenci önceki sohbetlerden bir konuya devam ediyorsa verilen hafızayı kullan. Ancak yeni sorunun açık talimatı eski konuşmadan üstündür.
+12) Eğitim düzeyi belirtilmişse o seviyeye uygun anlat. Belirtilmemişse anlaşılır, orta seviyede anlat.
+13) Kullanıcı yalnızca sonuç istiyorsa kısa cevap ver; çözüm istiyorsa gerekli çözüm adımlarını göster.
+14) Cevapta iç düşünme zincirini veya gizli muhakemeni anlatma; bunun yerine doğrulanmış sonuç ve gerekli kısa gerekçeyi ver.
+15) Kullanıcı bir görsel/PDF'deki soruyu soruyorsa cevap doğrudan o soruya ait olsun; yeni soru üretme.
+16) "Kesinlikle %100" gibi gerçek dışı garanti verme. Doğruluğu artırmak için kontrol et; belirsizlik varsa dürüstçe belirt.
+`;
+
+      const history = await buildConversationContext();
+
+      const messages = [{role:'system', content:systemPrompt}];
+      history.forEach(m => {
+        // Sistem hafızasını koru; fazla uzun geçmişi zaten trim ettik.
+        messages.push(m);
+      });
+
+      const userContent = [];
+      userContent.push({
+        type:'text',
+        text:
+          (prompt || 'Bu ekli soruyu çöz.') +
+          (hasPdf
+            ? `\n\nEK BELGE: ${attachmentName || 'PDF'}\nPDF metin katmanından çıkarılan içerik aşağıdadır. Bu metni görsellerle karşılaştırarak kullan:\n${trimForContext(pdfText, 10000)}`
+            : '') +
+          (hasPdf || hasImage
+            ? '\n\nEK KURAL: Görsel/PDF üzerindeki soruyu önce doğru biçimde tespit et, sonra çöz. Okunmayan karakterleri tahmin etme.'
+            : '')
+      });
+
+      if (imagePartBase64) {
+        userContent.push({type:'image_url', image_url:imagePartBase64});
+      }
+      for (const pageImage of pdfImages) {
+        userContent.push({type:'image_url', image_url:pageImage});
+      }
+
+      messages.push({role:'user', content:userContent});
+
+      const payload = {
+        model:MISTRAL_MODEL,
+        messages,
+        temperature:0.1,
+        max_tokens:4000,
+        stream:true,
+        random_seed:42,
+        frequency_penalty:0.25,
+        presence_penalty:0,
+        reasoning_effort:'high'
+      };
+
+      const useDirectApi = !!MISTRAL_API_KEY.trim();
+      const endpoint = useDirectApi
+        ? 'https://api.mistral.ai/v1/chat/completions'
+        : (location.protocol === 'file:' ? '' : MISTRAL_PROXY_URL);
+
+      if (!endpoint) {
+        throw new Error('AI bağlantısı yapılandırılmamış. Güvenli /api/mistral proxy veya yeni bir Mistral API anahtarı tanımlayın.');
+      }
+
+      const headers = {'Content-Type':'application/json'};
+      if (useDirectApi) headers.Authorization = `Bearer ${MISTRAL_API_KEY}`;
+
+      const response = await fetch(endpoint, {
+        method:'POST',
+        headers,
+        body:JSON.stringify(payload),
+        signal
+      });
+
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const errJson = await response.json();
+          detail = errJson?.message || errJson?.error?.message || '';
+        } catch (_) {}
+        throw new Error(`API ${response.status}${detail ? ': ' + detail : ''}`);
+      }
+
+      let fullText = '';
+      contentDiv.textContent = '';
+      contentDiv.classList.add('streaming-cursor');
+
+      await readMistralStream(response, (delta) => {
+        if (signal.aborted) return;
+        fullText += delta;
+        contentDiv.innerHTML = parseMarkdown(fullText);
+        contentDiv.classList.add('streaming-cursor');
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, signal);
+
+      contentDiv.classList.remove('streaming-cursor');
+
+      if (!fullText.trim()) {
+        throw new Error('AI boş yanıt döndürdü.');
+      }
+
+      // Matematik render
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(group, {
+            delimiters:[
+              {left:'$$',right:'$$',display:true},
+              {left:'$',right:'$',display:false},
+              {left:'\\(',right:'\\)',display:false},
+              {left:'\\[',right:'\\]',display:true}
+            ],
+            throwOnError:false
+          });
+        } catch (_) {}
+      }
+
+      // Yanıtı yalnızca aktif sohbet değişmediyse kaydet.
+      if (activeChatId) {
+        await db.ref(`chat_messages/${currentUser.uid}/${activeChatId}`).push({
+          role:'assistant',
+          text:fullText,
+          timestamp:Date.now(),
+          requestId
+        });
+        await db.ref(`user_chats/${currentUser.uid}/${activeChatId}`).update({
+          lastUpdated:Date.now()
+        });
+      }
+
+    } catch (err) {
+      if (err?.name === 'AbortError') return;
+
+      console.error('AI error:', err);
+      const group = document.querySelector('.msg-group.ai:last-child');
+      const content = group?.querySelector('.ai-msg-content');
+      if (content) {
+        content.classList.remove('streaming-cursor');
+        content.innerHTML = `<span class="ai-error">⚠️ ${escapeHTML(err.message || 'Yanıt alınamadı.')}</span>`;
+      } else {
+        renderAIMessage(`⚠️ Yanıt alınamadı: ${err.message || 'Bilinmeyen hata.'}`, {allowDuplicate:true});
+      }
+    } finally {
+      isAIProcessing = false;
+      activeAIAbortController = null;
+    }
+  }
+
+</script>
+</body>
+</html>
